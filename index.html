@@ -60,6 +60,41 @@ const supabaseClient = window.supabase.createClient(
   SUPABASE_PUBLISHABLE_KEY
 );
 </script>
+  
+<section id="deposit">
+  <h2>Deposit to SEMO PAY</h2>
+  <p>Submit your deposit request for review.</p>
+
+  <form id="depositForm">
+    <label for="depositAmount">Amount (UGX)</label>
+    <input
+      type="number"
+      id="depositAmount"
+      min="1000"
+      required
+      placeholder="Enter amount"
+    />
+
+    <label for="depositMethod">Payment method</label>
+    <select id="depositMethod" required>
+      <option value="">Choose a method</option>
+      <option value="MTN Mobile Money">MTN Mobile Money</option>
+      <option value="Airtel Money">Airtel Money</option>
+    </select>
+
+    <button type="submit">Submit Deposit Request</button>
+  </form>
+  <p id="depositMessage" role="status"></p>
+</section>
+
+<script>
+document.getElementById("depositForm").addEventListener("submit", function(event) {
+  event.preventDefault();
+  document.getElementById("depositMessage").textContent =
+    "Form preview only. Your request has not been sent or saved.";
+});
+</script>
+
 
 </body>
 </html>
