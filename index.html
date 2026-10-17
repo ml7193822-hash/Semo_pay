@@ -2,199 +2,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SEMO PAY Uganda</title>
-<style>
-body{margin:0;font-family:Arial,sans-serif;background:#f3f7f4;color:#173c2c}
-header{background:#123e32;color:white;padding:22px;text-align:center}
-main{max-width:480px;margin:25px auto;padding:15px}
-.card{background:white;padding:22px;margin:15px 0;border-radius:14px;box-shadow:0 3px 12px #0001}
-h2{margin-top:0}
-.amount{font-size:28px;font-weight:bold;color:#17744b}
-button{width:100%;padding:13px;background:#176b48;color:white;border:0;border-radius:8px;font-size:16px;margin-top:10px}
-.note{font-size:13px;color:#5a6b60;line-height:1.5}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SEMO PAY</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f5f9;
+      color: #172033;
+    }
+    header {
+      background: #087f5b;
+      color: white;
+      padding: 22px 18px;
+      text-align: center;
+    }
+    header h1 { margin: 0 0 7px; }
+    main {
+      max-width: 500px;
+      margin: 22px auto;
+      padding: 0 14px;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 18px #17203310;
+    }
+    label {
+      display: block;
+      margin: 15px 0 7px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      font-size: 16px;
+      background: white;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 18px;
+      border: 0;
+      border-radius: 9px;
+      background: #087f5b;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .notice {
+      background: #ecfdf5;
+      padding: 12px;
+      border-radius: 9px;
+      line-height: 1.5;
+    }
+    #message { line-height: 1.5; }
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #64748b;
+      font-size: 13px;
+    }
+  </style>
 </head>
 <body>
-<header>
-<h1>SEMO PAY</h1>
-<p>Your Uganda Demo Dashboard</p>
-</header>
-<main>
-<div class="card">
-<h2>Welcome to SEMO PAY</h2>
-<p>Manage your demo account and payment requests.</p>
-<p class="note">Prototype only. No real money is accepted or transferred.</p>
-</div>
-<div class="card">
-<h2>Welcome Bonus</h2>
-<div class="amount">UGX 5,000</div>
-<p class="note">Proposed demo bonus; not withdrawable cash.</p>
-</div>
-<div class="card">
-<h2>Withdrawal Requests</h2>
-<div class="amount">UGX 3,000</div>
-<p class="note">Minimum proposed request amount.</p>
-</div>
-<div class="card">
-<h2>Payment Methods</h2>
-<p>MTN Mobile Money</p>
-<p>Airtel Money</p>
-<p class="note">Manual payment records are not connected yet.</p>
-</div>
-<div class="card">
-<h2>Investment Timer</h2>
-<p>24-hour demo tracking only. No profits are calculated or guaranteed.</p>
-<button onclick="alert('Demo only: account and payment services are not connected yet.')">Open Dashboard Demo</button>
-</div>
-</main>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
-<script>
-const SUPABASE_URL = "PASTE_YOUR_PROJECT_URL_HERE";
-const SUPABASE_PUBLISHABLE_KEY = "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
+  <header>
+    <h1>SEMO PAY</h1>
+    <p>Simple and secure payment requests</p>
+  </header>
 
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
-</script>
-  
-<section id="deposit">
-  <h2>Deposit to SEMO PAY</h2>
-  <p>Submit your deposit request for review.</p>
+  <main>
+    <section class="card">
+      <h2>Deposit</h2>
+      <p>Select your Mobile Money network and enter your payment details.</p>
 
-  <form id="depositForm">
-    <label for="depositAmount">Amount (UGX)</label>
-    <input
-      type="number"
-      id="depositAmount"
-      min="1000"
-      required
-      placeholder="Enter amount"
-    />
+      <label for="network">Payment method</label>
+      <select id="network" required>
+        <option value="">Choose network</option>
+        <option value="MTN Mobile Money">MTN Mobile Money</option>
+        <option value="Airtel Money">Airtel Money</option>
+      </select>
 
-    <label for="depositMethod">Payment method</label>
-    <select id="depositMethod" required>
-      <option value="">Choose a method</option>
-      <option value="MTN Mobile Money">MTN Mobile Money</option>
-      <option value="Airtel Money">Airtel Money</option>
-    </select>
+      <div class="notice" id="instructions" aria-live="polite">
+        Select MTN or Airtel to view the instructions.
+      </div>
 
-    <button type="submit">Submit Deposit Request</button>
-  </form>
-  <p id="depositMessage" role="status"></p>
-</section>
+      <form id="depositForm">
+        <label for="amount">Amount (UGX)</label>
+        <input id="amount" type="number" min="1"
+          step="1" placeholder="Enter amount" required>
 
-<script>
-document.getElementById("depositForm").addEventListener("submit", function(event) {
-  event.preventDefault();
-  document.getElementById("depositMessage").textContent =
-    "Form preview only. Your request has not been sent or saved.";
-});
-</script>
+        <label for="reference">Transaction reference</label>
+        <input id="reference" type="text" maxlength="100"
+          placeholder="Enter reference after payment" required>
 
+        <button type="submit">Submit Deposit Request</button>
+      </form>
+      <p id="message" role="status"></p>
+    </section>
 
-<style>
-  .semo-pay {
-    max-width: 480px;
-    margin: 24px auto;
-    padding: 22px;
-    border-radius: 18px;
-    background: #ffffff;
-    color: #172033;
-    font-family: Arial, sans-serif;
-    box-shadow: 0 5px 24px #00000012;
-  }
-  .semo-pay h2 { margin-top: 0; }
-  .semo-pay label {
-    display: block;
-    margin: 15px 0 7px;
-    font-weight: 600;
-  }
-  .semo-pay input, .semo-pay select {
-    box-sizing: border-box;
-    width: 100%;
-    padding: 13px;
-    border: 1px solid #ccd2dc;
-    border-radius: 9px;
-    background: white;
-    color: #172033;
-  }
-  .semo-pay button {
-    width: 100%;
-    padding: 14px;
-    margin-top: 18px;
-    border: 0;
-    border-radius: 9px;
-    background: #087f5b;
-    color: white;
-    font-weight: bold;
-  }
-  .semo-note {
-    padding: 12px;
-    border-radius: 9px;
-    background: #f1f5f9;
-    line-height: 1.5;
-  }
-</style>
+    <section class="card">
+      <h2>Important</h2>
+      <p>Confirm the official SEMO PAY payment instructions before sending money. A submitted request is not proof of payment.</p>
+    </section>
+  </main>
 
-<section class="semo-pay">
-  <h2>SEMO PAY — Deposit</h2>
-  <p>Pay using your preferred Mobile Money network.</p>
+  <footer>SEMO PAY &copy; 2026</footer>
 
-  <label for="semoMethod">Payment method</label>
-  <select id="semoMethod" required>
-    <option value="">Choose a network</option>
-    <option value="MTN Mobile Money">MTN Mobile Money</option>
-    <option value="Airtel Money">Airtel Money</option>
-  </select>
+  <script>
+    const network = document.getElementById("network");
+    const instructions = document.getElementById("instructions");
+    const form = document.getElementById("depositForm");
+    const message = document.getElementById("message");
 
-  <div class="semo-note" id="semoInstructions" aria-live="polite">
-    Select a network to view its payment instructions.
-  </div>
+    network.addEventListener("change", function () {
+      if (this.value === "MTN Mobile Money") {
+        instructions.textContent =
+          "MTN selected. Confirm the official payment number with SEMO PAY support before paying.";
+      } else if (this.value === "Airtel Money") {
+        instructions.textContent =
+          "Airtel selected. Confirm the official payment number with SEMO PAY support before paying.";
+      } else {
+        instructions.textContent =
+          "Select MTN or Airtel to view the instructions.";
+      }
+    });
 
-  <form id="semoDepositForm">
-    <label for="semoAmount">Amount (UGX)</label>
-    <input id="semoAmount" type="number"
-      min="1" step="1" required placeholder="Enter amount">
-
-    <label for="semoReference">Transaction reference</label>
-    <input id="semoReference" type="text"
-      maxlength="100" required
-      placeholder="Enter reference after paying">
-
-    <button type="submit">Submit Deposit Request</button>
-    <p id="semoMessage" role="status"></p>
-  </form>
-</section>
-
-<script>
-const method = document.getElementById("semoMethod");
-const instructions = document.getElementById("semoInstructions");
-const form = document.getElementById("semoDepositForm");
-const message = document.getElementById("semoMessage");
-
-method.addEventListener("change", function () {
-  if (this.value === "MTN Mobile Money") {
-    instructions.textContent =
-      "MTN selected. Confirm the official SEMO PAY payment number with the administrator before sending money.";
-  } else if (this.value === "Airtel Money") {
-    instructions.textContent =
-      "Airtel selected. Confirm the official SEMO PAY payment number with the administrator before sending money.";
-  } else {
-    instructions.textContent =
-      "Select a network to view its payment instructions.";
-  }
-});
-
-form.addEventListener("submit", function (event) {
-  event.preventDefault();
-  message.textContent =
-    "Preview only: your request has NOT been saved. Payment verification and secure database submission are not connected yet.";
-});
-</script>
-
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      message.textContent =
+        "Preview only: your request has not been saved. Secure Supabase submission is not connected yet.";
+    });
+  </script>
 </body>
 </html>
+
