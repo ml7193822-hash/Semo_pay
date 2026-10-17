@@ -96,5 +96,105 @@ document.getElementById("depositForm").addEventListener("submit", function(event
 </script>
 
 
+<style>
+  .semo-pay {
+    max-width: 480px;
+    margin: 24px auto;
+    padding: 22px;
+    border-radius: 18px;
+    background: #ffffff;
+    color: #172033;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 5px 24px #00000012;
+  }
+  .semo-pay h2 { margin-top: 0; }
+  .semo-pay label {
+    display: block;
+    margin: 15px 0 7px;
+    font-weight: 600;
+  }
+  .semo-pay input, .semo-pay select {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #ccd2dc;
+    border-radius: 9px;
+    background: white;
+    color: #172033;
+  }
+  .semo-pay button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 18px;
+    border: 0;
+    border-radius: 9px;
+    background: #087f5b;
+    color: white;
+    font-weight: bold;
+  }
+  .semo-note {
+    padding: 12px;
+    border-radius: 9px;
+    background: #f1f5f9;
+    line-height: 1.5;
+  }
+</style>
+
+<section class="semo-pay">
+  <h2>SEMO PAY — Deposit</h2>
+  <p>Pay using your preferred Mobile Money network.</p>
+
+  <label for="semoMethod">Payment method</label>
+  <select id="semoMethod" required>
+    <option value="">Choose a network</option>
+    <option value="MTN Mobile Money">MTN Mobile Money</option>
+    <option value="Airtel Money">Airtel Money</option>
+  </select>
+
+  <div class="semo-note" id="semoInstructions" aria-live="polite">
+    Select a network to view its payment instructions.
+  </div>
+
+  <form id="semoDepositForm">
+    <label for="semoAmount">Amount (UGX)</label>
+    <input id="semoAmount" type="number"
+      min="1" step="1" required placeholder="Enter amount">
+
+    <label for="semoReference">Transaction reference</label>
+    <input id="semoReference" type="text"
+      maxlength="100" required
+      placeholder="Enter reference after paying">
+
+    <button type="submit">Submit Deposit Request</button>
+    <p id="semoMessage" role="status"></p>
+  </form>
+</section>
+
+<script>
+const method = document.getElementById("semoMethod");
+const instructions = document.getElementById("semoInstructions");
+const form = document.getElementById("semoDepositForm");
+const message = document.getElementById("semoMessage");
+
+method.addEventListener("change", function () {
+  if (this.value === "MTN Mobile Money") {
+    instructions.textContent =
+      "MTN selected. Confirm the official SEMO PAY payment number with the administrator before sending money.";
+  } else if (this.value === "Airtel Money") {
+    instructions.textContent =
+      "Airtel selected. Confirm the official SEMO PAY payment number with the administrator before sending money.";
+  } else {
+    instructions.textContent =
+      "Select a network to view its payment instructions.";
+  }
+});
+
+form.addEventListener("submit", function (event) {
+  event.preventDefault();
+  message.textContent =
+    "Preview only: your request has NOT been saved. Payment verification and secure database submission are not connected yet.";
+});
+</script>
+
 </body>
 </html>
