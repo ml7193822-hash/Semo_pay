@@ -1,286 +1,290 @@
-L8Dr2ANL2oaHCE5HS8lzAy
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SEMO PAY</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f2f5f9;
-      color: #172033;
-    }
-    header {
-      background: #087f5b;
-      color: white;
-      padding: 22px 18px;
-      text-align: center;
-    }
-    header h1 { margin: 0 0 7px; }
-    main {
-      max-width: 500px;
-      margin: 22px auto;
-      padding: 0 14px;
-    }
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 16px;
-      box-shadow: 0 4px 18px #17203310;
-    }
-    label {
-      display: block;
-      margin: 15px 0 7px;
-      font-weight: bold;
-    }
-    input, select {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #cbd5e1;
-      border-radius: 9px;
-      font-size: 16px;
-      background: white;
-    }
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 18px;
-      border: 0;
-      border-radius: 9px;
-      background: #087f5b;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-    }
-    .notice {
-      background: #ecfdf5;
-      padding: 12px;
-      border-radius: 9px;
-      line-height: 1.5;
-    }
-    #message { line-height: 1.5; }
-    footer {
-      text-align: center;
-      padding: 20px;
-      color: #64748b;
-      font-size: 13px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEMO PAY</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f2f5fa;color:#172033}
+header{background:#082b59;color:white;padding:20px 16px;text-align:center}
+header h1{margin:0;font-size:28px}
+header p{margin:7px 0 0;color:#d5e4ff}
+.container{max-width:850px;margin:auto;padding:15px}
+.card{background:white;border-radius:14px;padding:18px;margin-bottom:15px;box-shadow:0 3px 12px #14213d12}
+h2{font-size:20px;margin-top:0;color:#092d5d}
+h3{font-size:16px;margin-bottom:8px}
+input,select,button{width:100%;padding:13px;margin:7px 0;border-radius:8px;border:1px solid #d4dce8;font-size:15px}
+button{background:#0866d9;color:white;border:0;font-weight:bold;cursor:pointer}
+button.secondary{background:#e7effc;color:#07346c}
+button.danger{background:#b42318}
+nav{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:15px}
+nav button{font-size:13px;padding:12px 5px;margin:0}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.stat{background:#edf4ff;padding:14px;border-radius:10px;overflow-wrap:anywhere}
+.stat small{display:block;color:#52637a;margin-bottom:8px}
+.stat strong{font-size:18px;color:#07346c}
+.hidden{display:none!important}
+.muted{font-size:13px;color:#65738a;line-height:1.5}
+.notice{background:#fff5d9;border:1px solid #f0d88a;padding:12px;border-radius:9px;font-size:13px;line-height:1.5}
+.item{border-bottom:1px solid #e5eaf1;padding:12px 0;overflow-wrap:anywhere}
+.item:last-child{border-bottom:0}
+.pill{display:inline-block;padding:4px 8px;border-radius:20px;background:#fff0cc;color:#805400;font-size:12px}
+footer{text-align:center;padding:20px;color:#69758a;font-size:12px}
+a{color:#0866d9}
+@media(min-width:600px){.stats{grid-template-columns:repeat(4,1fr)}}
+</style>
 </head>
 <body>
-  <header>
-    <h1>SEMO PAY</h1>
-    <p>Simple and secure payment requests</p>
-  </header>
+<header>
+  <h1>SEMO PAY</h1>
+  <p>Your account dashboard</p>
+</header>
 
-  <main>
-    <section class="card">
-      <h2>Deposit</h2>
-      <p>Select your Mobile Money network and enter your payment details.</p>
-
-      <label for="network">Payment method</label>
-      <select id="network" required>
-        <option value="">Choose network</option>
-        <option value="MTN Mobile Money">MTN Mobile Money</option>
-        <option value="Airtel Money">Airtel Money</option>
-      </select>
-
-      <div class="notice" id="instructions" aria-live="polite">
-        Select MTN or Airtel to view the instructions.
+<main class="container">
+  <section id="auth">
+    <div class="card">
+      <h2>Welcome to SEMO PAY</h2>
+      <p class="muted">Sign in to explore the demo dashboard.</p>
+      <div class="notice">Demo version only. Do not enter a real password or send real money through this page.</div>
+      <div id="loginForm">
+        <h3>Login</h3>
+        <input id="loginName" placeholder="Your name" autocomplete="off">
+        <button onclick="login()">Login to demo</button>
+        <button class="secondary" onclick="showSignup()">Create account</button>
       </div>
+      <div id="signupForm" class="hidden">
+        <h3>Create a demo account</h3>
+        <input id="signupName" placeholder="Your name" autocomplete="off">
+        <input id="signupPhone" placeholder="Phone number (demo only)" inputmode="tel">
+        <button onclick="signup()">Continue</button>
+        <button class="secondary" onclick="showLogin()">Back to login</button>
+      </div>
+    </div>
+  </section>
 
-      <form id="depositForm">
-        <label for="amount">Amount (UGX)</label>
-        <input id="amount" type="number" min="1"
-          step="1" placeholder="Enter amount" required>
+  <section id="app" class="hidden">
+    <div class="card">
+      <h2>Hello, <span id="userName">User</span>!</h2>
+      <p class="muted">Welcome to your SEMO PAY demo dashboard.</p>
+      <button class="secondary" onclick="logout()">Log out</button>
+    </div>
 
-        <label for="reference">Transaction reference</label>
-        <input id="reference" type="text" maxlength="100"
-          placeholder="Enter reference after payment" required>
+    <nav>
+      <button onclick="showPage('dashboard')">Dashboard</button>
+      <button onclick="showPage('deposit')">Deposit</button>
+      <button onclick="showPage('withdraw')">Withdraw</button>
+      <button onclick="showPage('invest')">Invest</button>
+      <button onclick="showPage('referrals')">Referrals</button>
+      <button onclick="showPage('history')">History</button>
+    </nav>
 
-        <button type="submit">Submit Deposit Request</button>
-      </form>
-      <p id="message" role="status"></p>
+    <section id="dashboardPage" class="page">
+      <div class="card">
+        <h2>My Dashboard</h2>
+        <div class="stats">
+          <div class="stat"><small>Demo balance</small><strong id="balance">UGX 0</strong></div>
+          <div class="stat"><small>Deposits requested</small><strong id="depositsTotal">UGX 0</strong></div>
+          <div class="stat"><small>Withdrawals requested</small><strong id="withdrawalsTotal">UGX 0</strong></div>
+          <div class="stat"><small>Demo investments</small><strong id="investmentsTotal">UGX 0</strong></div>
+        </div>
+        <p class="muted">These figures are sample interface data, not verified funds or real earnings.</p>
+      </div>
+      <div class="card">
+        <h2>Quick actions</h2>
+        <button onclick="showPage('deposit')">Request a deposit</button>
+        <button onclick="showPage('withdraw')">Request a withdrawal</button>
+        <button onclick="showPage('invest')">View investments</button>
+      </div>
     </section>
 
-    <section class="card">
-      <h2>Important</h2>
-      <p>Confirm the official SEMO PAY payment instructions before sending money. A submitted request is not proof of payment.</p>
+    <section id="depositPage" class="page hidden">
+      <div class="card">
+        <h2>Deposit request</h2>
+        <form onsubmit="submitRequest(event,'Deposit')">
+          <label>Amount (UGX)</label>
+          <input id="depositAmount" type="number" min="1000" step="500" required placeholder="Enter amount">
+          <label>Payment method</label>
+          <select id="depositMethod">
+            <option>MTN Mobile Money</option>
+            <option>Airtel Money</option>
+          </select>
+          <label>Transaction reference (demo)</label>
+          <input id="depositReference" placeholder="Optional reference">
+          <button type="submit">Submit demo request</button>
+        </form>
+        <p class="muted">Submitting here does not transfer money or confirm a payment.</p>
+      </div>
     </section>
-  </main>
 
-  <footer>SEMO PAY &copy; 2026</footer>
+    <section id="withdrawPage" class="page hidden">
+      <div class="card">
+        <h2>Withdrawal request</h2>
+        <form onsubmit="submitRequest(event,'Withdrawal')">
+          <label>Amount (UGX)</label>
+          <input id="withdrawAmount" type="number" min="2000" step="500" required placeholder="Minimum UGX 2,000">
+          <label>Payment method</label>
+          <select id="withdrawMethod">
+            <option>MTN Mobile Money</option>
+            <option>Airtel Money</option>
+          </select>
+          <label>Mobile money phone number</label>
+          <input id="withdrawPhone" type="tel" required placeholder="Enter number">
+          <button type="submit">Submit demo request</button>
+        </form>
+        <p class="muted">This demo cannot send withdrawals or verify available funds.</p>
+      </div>
+    </section>
 
-  <script>
-    const network = document.getElementById("network");
-    const instructions = document.getElementById("instructions");
-    const form = document.getElementById("depositForm");
-    const message = document.getElementById("message");
+    <section id="investPage" class="page hidden">
+      <div class="card">
+        <h2>Investments</h2>
+        <div class="notice">No real investment or guaranteed return is offered by this demo. Only use verified, lawful investment terms before enabling real deposits.</div>
+        <form onsubmit="submitInvestment(event)">
+          <label>Demo investment amount (UGX)</label>
+          <input id="investAmount" type="number" min="1000" step="500" required placeholder="Enter sample amount">
+          <button type="submit">Add demo investment record</button>
+        </form>
+        <h3>My investment records</h3>
+        <div id="investmentList"><p class="muted">No demo investments yet.</p></div>
+      </div>
+    </section>
 
-    network.addEventListener("change", function () {
-      if (this.value === "MTN Mobile Money") {
-        instructions.textContent =
-          "MTN selected. Confirm the official payment number with SEMO PAY support before paying.";
-      } else if (this.value === "Airtel Money") {
-        instructions.textContent =
-          "Airtel selected. Confirm the official payment number with SEMO PAY support before paying.";
-      } else {
-        instructions.textContent =
-          "Select MTN or Airtel to view the instructions.";
-      }
-    });
+    <section id="referralsPage" class="page hidden">
+      <div class="card">
+        <h2>Referral commissions</h2>
+        <p class="muted">Illustrative rates only; no commissions are earned or paid by this demo.</p>
+        <div class="item"><strong>Level 1</strong><p>30% — sample rate</p></div>
+        <div class="item"><strong>Level 2</strong><p>5% — sample rate</p></div>
+        <div class="item"><strong>Level 3</strong><p>1% — sample rate</p></div>
+        <label>Your demo referral code</label>
+        <input id="refCode" readonly>
+        <button class="secondary" onclick="copyReferral()">Copy referral code</button>
+        <p id="copyMessage" class="muted"></p>
+      </div>
+    </section>
 
-    form.addEventListener("submit", function (event) {
-      event.preventDefault();
-      message.textContent =
-        "Preview only: your request has not been saved. Secure Supabase submission is not connected yet.";
-    });
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</body>
-  <script>
-  const SUPABASE_URL = "PASTE_YOUR_PROJECT_URL_HERE";
-  const SUPABASE_PUBLISHABLE_KEY = "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
+    <section id="historyPage" class="page hidden">
+      <div class="card">
+        <h2>Request history</h2>
+        <div id="historyList"><p class="muted">No requests yet.</p></div>
+      </div>
+    </section>
+  </section>
+</main>
 
-  const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-  );
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<footer>SEMO PAY · Demo website · No real financial transactions</footer>
 
 <script>
-  const SUPABASE_URL = "PASTE_YOUR_PROJECT_URL_HERE";
-  const SUPABASE_PUBLISHABLE_KEY = "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
+let currentUser = "";
+let records = [];
+let investments = [];
 
-  const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-  );
+function showSignup(){
+  document.getElementById("loginForm").classList.add("hidden");
+  document.getElementById("signupForm").classList.remove("hidden");
+}
+function showLogin(){
+  document.getElementById("signupForm").classList.add("hidden");
+  document.getElementById("loginForm").classList.remove("hidden");
+}
+function signup(){
+  const name = document.getElementById("signupName").value.trim();
+  if(!name){alert("Please enter your name.");return;}
+  currentUser = name;
+  startApp();
+}
+function login(){
+  const name = document.getElementById("loginName").value.trim();
+  if(!name){alert("Please enter your name.");return;}
+  currentUser = name;
+  startApp();
+}
+function startApp(){
+  document.getElementById("auth").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+  document.getElementById("userName").textContent = currentUser;
+  document.getElementById("refCode").value = "SEMO-" + currentUser.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,10);
+  showPage("dashboard");
+  render();
+}
+function logout(){
+  currentUser = "";
+  records = [];
+  investments = [];
+  document.getElementById("app").classList.add("hidden");
+  document.getElementById("auth").classList.remove("hidden");
+  document.getElementById("loginName").value = "";
+  showLogin();
+}
+function showPage(page){
+  document.querySelectorAll(".page").forEach(p=>p.classList.add("hidden"));
+  document.getElementById(page+"Page").classList.remove("hidden");
+}
+function money(value){
+  return "UGX " + Number(value || 0).toLocaleString("en-UG");
+}
+function submitRequest(event,type){
+  event.preventDefault();
+  const isDeposit = type === "Deposit";
+  const amount = Number(document.getElementById(isDeposit?"depositAmount":"withdrawAmount").value);
+  if(!Number.isFinite(amount) || amount <= 0){alert("Enter a valid amount.");return;}
+  const method = document.getElementById(isDeposit?"depositMethod":"withdrawMethod").value;
+  const reference = isDeposit
+    ? document.getElementById("depositReference").value.trim()
+    : document.getElementById("withdrawPhone").value.trim();
+  records.unshift({
+    type:type, amount:amount, method:method, reference:reference,
+    status:"Demo request — not processed", date:new Date().toLocaleString()
+  });
+  event.target.reset();
+  render();
+  alert("Demo request added to this page. No money was transferred.");
+  showPage("history");
+}
+function submitInvestment(event){
+  event.preventDefault();
+  const amount = Number(document.getElementById("investAmount").value);
+  if(!Number.isFinite(amount) || amount <= 0){alert("Enter a valid amount.");return;}
+  investments.unshift({amount:amount,date:new Date().toLocaleString()});
+  event.target.reset();
+  render();
+  alert("Demo investment record added. No money was invested.");
+}
+function render(){
+  const total = type => records.filter(r=>r.type===type).reduce((sum,r)=>sum+r.amount,0);
+  document.getElementById("depositsTotal").textContent = money(total("Deposit"));
+  document.getElementById("withdrawalsTotal").textContent = money(total("Withdrawal"));
+  document.getElementById("investmentsTotal").textContent = money(investments.reduce((s,i)=>s+i.amount,0));
+  document.getElementById("balance").textContent = money(0);
+  const history = document.getElementById("historyList");
+  history.innerHTML = records.length ? records.map(r =>
+    '<div class="item"><strong>'+escapeHTML(r.type)+' · '+money(r.amount)+'</strong>'+
+    '<p class="muted">'+escapeHTML(r.method)+' · '+escapeHTML(r.date)+'</p>'+
+    '<span class="pill">'+escapeHTML(r.status)+'</span></div>'
+  ).join("") : '<p class="muted">No requests yet.</p>';
+  const list = document.getElementById("investmentList");
+  list.innerHTML = investments.length ? investments.map(i =>
+    '<div class="item"><strong>'+money(i.amount)+'</strong><p class="muted">'+escapeHTML(i.date)+'</p></div>'
+  ).join("") : '<p class="muted">No demo investments yet.</p>';
+}
+function escapeHTML(value){
+  return String(value).replace(/[&<>"']/g, c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+function copyReferral(){
+  const field = document.getElementById("refCode");
+  field.select();
+  let message = "Select and copy the code manually.";
+  try{
+    if(document.execCommand("copy")) message = "Referral code copied.";
+  }catch(e){}
+  document.getElementById("copyMessage").textContent = message;
+}
 </script>
-
-  <section id="account">
-  <h2>Create Your SEMO PAY Account</h2>
-
-  <form id="signupForm">
-    <label>Email address</label>
-    <input id="signupEmail" type="email"
-      placeholder="Enter your email" required>
-
-    <label>Password</label>
-    <input id="signupPassword" type="password"
-      placeholder="Create a password"
-      minlength="6" required>
-
-    <button type="submit">Sign Up</button>
-  </form>
-
-  <p id="signupMessage"></p>
-
-  <h2>Login</h2>
-
-  <form id="loginForm">
-    <label>Email address</label>
-    <input id="loginEmail" type="email"
-      placeholder="Enter your email" required>
-
-    <label>Password</label>
-    <input id="loginPassword" type="password"
-      placeholder="Enter your password" required>
-
-    <button type="submit">Login</button>
-  </form>
-
-  <p id="loginMessage"></p>
-  </section>
-  <script>
-document.getElementById("signupForm").addEventListener("submit", async function(e) {
-  e.preventDefault();
-
-  const email = document.getElementById("signupEmail").value.trim();
-  const password = document.getElementById("signupPassword").value;
-  const message = document.getElementById("signupMessage");
-
-  message.textContent = "Creating account...";
-
-  const { data, error } = await supabaseClient.auth.signUp({
-    email: email,
-    password: password
-  });
-
-  if (error) {
-    message.textContent = error.message;
-    return;
-  }
-
-  message.textContent = data.session
-    ? "Account created! You can now log in."
-    : "Registration started. Check your email if confirmation is required.";
-});
-
-document.getElementById("loginForm").addEventListener("submit", async function(e) {
-  e.preventDefault();
-
-  const email = document.getElementById("loginEmail").value.trim();
-  const password = document.getElementById("loginPassword").value;
-  const message = document.getElementById("loginMessage");
-
-  message.textContent = "Signing in...";
-
-  const { data, error } = await supabaseClient.auth.signInWithPassword({
-    email: email,
-    password: password
-  });
-
-  if (error) {
-    message.textContent = error.message;
-    return;
-  }
-
-  message.textContent = "Login successful!";
-});
-    </script>
-
-</nav>
-<section id="semo-dashboard" style="font-family:Arial,sans-serif;background:#f3f5f9;padding:16px;border-radius:12px;color:#172033">
-  <h2 style="text-align:center;background:#092b55;color:white;padding:20px;border-radius:10px">SEMO PAY Dashboard</h2>
-  <p style="text-align:center">Welcome to your account</p>
-  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
-    <div style="background:white;padding:16px;border-radius:10px"><b>My Account</b><p>Account details</p></div>
-    <div style="background:white;padding:16px;border-radius:10px"><b>Available Balance</b><p>UGX —</p></div>
-    <div style="background:white;padding:16px;border-radius:10px"><b>Deposits</b><p>View deposit requests</p></div>
-    <div style="background:white;padding:16px;border-radius:10px"><b>Investments</b><p>View investments</p></div>
-    <div style="background:white;padding:16px;border-radius:10px"><b>Profits</b><p>UGX —</p></div>
-    <div style="background:white;padding:16px;border-radius:10px"><b>Withdraw</b><p>Withdrawal requests</p></div>
-  </div>
-  <h3>Referral Commissions</h3>
-  <div style="background:white;padding:14px;border-radius:10px;margin-bottom:8px">Level 1 — 30%</div>
-  <div style="background:white;padding:14px;border-radius:10px;margin-bottom:8px">Level 2 — 5%</div>
-  <div style="background:white;padding:14px;border-radius:10px;margin-bottom:8px">Level 3 — 1%</div>
-  <h3>Withdrawal History</h3>
-  <div style="background:white;padding:14px;border-radius:10px">Your withdrawal records will appear here when connected to the database.</div>
-</section>
-  
-<nav style="position:relative;background:#092b55;padding:12px;text-align:right;border-radius:8px;margin:10px 0">
-  <details style="display:inline-block;text-align:left">
-    <summary style="cursor:pointer;background:white;color:#092b55;padding:10px 16px;border-radius:6px;font-weight:bold">☰ Menu</summary>
-    <div style="position:absolute;right:12px;top:52px;z-index:999;background:white;min-width:160px;box-shadow:0 4px 12px #0003;border-radius:8px">
-      <a href="#deposit" style="display:block;padding:12px;color:#092b55;text-decoration:none">Deposit</a>
-      <a href="#withdraw" style="display:block;padding:12px;color:#092b55;text-decoration:none">Withdraw</a>
-      <a href="#invest" style="display:block;padding:12px;color:#092b55;text-decoration:none">Invest</a>
-      <a href="#reinvest" style="display:block;padding:12px;color:#092b55;text-decoration:none">Reinvest</a>
-    </div>
-  </details>
-
-
-
-  
-
 </body>
-</html>
 </html>
 
