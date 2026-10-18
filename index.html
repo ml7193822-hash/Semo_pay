@@ -1,68 +1,6 @@
 
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script>
-const SUPABASE_URL = 
-  https://npeoonuimebfdogwjdmc.supabase.co/rest/v1/
-const SUPABASE_KEY = 
-  sb_publishable_QeCmdqpcw0QpY9Y4dN0i5w_NfYf0bBR
-
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-</script>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SEMO PAY</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f2f5fa;color:#172033}
-header{background:#082b59;color:white;padding:20px 16px;text-align:center}
-header h1{margin:0;font-size:28px}
-header p{margin:7px 0 0;color:#d5e4ff}
-.container{max-width:850px;margin:auto;padding:15px}
-.card{background:white;border-radius:14px;padding:18px;margin-bottom:15px;box-shadow:0 3px 12px #14213d12}
-h2{font-size:20px;margin-top:0;color:#092d5d}
-h3{font-size:16px;margin-bottom:8px}
-input,select,button{width:100%;padding:13px;margin:7px 0;border-radius:8px;border:1px solid #d4dce8;font-size:15px}
-button{background:#0866d9;color:white;border:0;font-weight:bold;cursor:pointer}
-button.secondary{background:#e7effc;color:#07346c}
-button.danger{background:#b42318}
-nav{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:15px}
-nav button{font-size:13px;padding:12px 5px;margin:0}
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.stat{background:#edf4ff;padding:14px;border-radius:10px;overflow-wrap:anywhere}
-.stat small{display:block;color:#52637a;margin-bottom:8px}
-.stat strong{font-size:18px;color:#07346c}
-.hidden{display:none!important}
-.muted{font-size:13px;color:#65738a;line-height:1.5}
-.notice{background:#fff5d9;border:1px solid #f0d88a;padding:12px;border-radius:9px;font-size:13px;line-height:1.5}
-.item{border-bottom:1px solid #e5eaf1;padding:12px 0;overflow-wrap:anywhere}
-.item:last-child{border-bottom:0}
-.pill{display:inline-block;padding:4px 8px;border-radius:20px;background:#fff0cc;color:#805400;font-size:12px}
-footer{text-align:center;padding:20px;color:#69758a;font-size:12px}
-a{color:#0866d9}
-@media(min-width:600px){.stats{grid-template-columns:repeat(4,1fr)}}
-</style>
-</head>
-<body>
-<header>
-  <h1>SEMO PAY</h1>
-  <p>Your account dashboard</p>
-</header>
-
-<main class="container">
-  <section id="auth">
-    <div class="card">
-      <h2>Welcome to SEMO PAY</h2>
       <p class="muted">Sign in to explore the demo dashboard.</p>
       <div class="notice">Demo version only. Do not enter a real password or send real money through this page.</div>
       <div id="loginForm">
