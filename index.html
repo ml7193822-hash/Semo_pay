@@ -1,88 +1,355 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SEMO PAY</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <section id="withdrawPage" class="page hidden">
-      <div class="card">
-        <h2>Withdrawal request</h2>
-        <form onsubmit="submitRequest(event,'Withdrawal')">
-          <label>Amount (UGX)</label>
-          <input id="withdrawAmount" type="number" min="2000" step="500" required placeholder="Minimum UGX 2,000">
-          <label>Payment method</label>
-          <select id="withdrawMethod">
-            <option>MTN Mobile Money</option>
-            <option>Airtel Money</option>
-          </select>
-          <label>Mobile money phone number</label>
-          <input id="withdrawPhone" type="tel" required placeholder="Enter number">
-          <button type="submit">Submit demo request</button>
-        </form>
-        <p class="muted">This demo cannot send withdrawals or verify available funds.</p>
-      </div>
-    </section>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f7f4;color:#183b2a;font-family:Arial,sans-serif}
+header{background:#126b3b;color:white;padding:17px;display:flex;justify-content:space-between;align-items:center}
+header h2{margin:0}
+button{border:0;border-radius:9px;padding:13px 16px;background:#168348;color:white;font-weight:bold;cursor:pointer;margin:3px}
+button:disabled{opacity:.5}
+input{width:100%;padding:13px;margin:7px 0 12px;border:1px solid #ccd8cf;border-radius:8px;font-size:16px}
+main{max-width:520px;margin:auto;padding:16px}
+.card{background:white;border-radius:14px;padding:18px;margin:14px 0;box-shadow:0 2px 9px #0000000c}
+.hidden{display:none!important}
+.small{font-size:13px;color:#65766b;line-height:1.5}
+.green{background:#126b3b;color:white}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row button{flex:1}
+.wheel{width:250px;height:250px;max-width:100%;border-radius:50%;margin:24px auto;background:conic-gradient(#ffdb76 0 60deg,#fff 60deg 120deg,#b9e6c7 120deg 180deg,#fff 180deg 240deg,#ffdb76 240deg 300deg,#b9e6c7 300deg 360deg);border:6px solid #126b3b;display:flex;align-items:center;justify-content:center;position:relative;transition:transform 2.5s ease-out}
+.wheel:before{content:"";position:absolute;top:-18px;border-left:15px solid transparent;border-right:15px solid transparent;border-bottom:27px solid #126b3b}
+.wheel span{background:white;border:3px solid #126b3b;border-radius:50%;padding:20px;font-weight:bold}
+</style>
+</head>
 
-    <section id="investPage" class="page hidden">
-      <div class="card">
-        <h2>Investments</h2>
-        <div class="notice">No real investment or guaranteed return is offered by this demo. Only use verified, lawful investment terms before enabling real deposits.</div>
-        <form onsubmit="submitInvestment(event)">
-          <label>Demo investment amount (UGX)</label>
-          <input id="investAmount" type="number" min="1000" step="500" required placeholder="Enter sample amount">
-          <button type="submit">Add demo investment record</button>
-        </form>
-        <h3>My investment records</h3>
-        <div id="investmentList"><p class="muted">No demo investments yet.</p></div>
-      </div>
-    </section>
+<body>
+<header>
+<h2>SEMO PAY</h2>
+<button onclick="toggleMenu()">☰ Menu</button>
+</header>
 
-    <section id="referralsPage" class="page hidden">
-      <div class="card">
-        <h2>Referral commissions</h2>
-        <p class="muted">Illustrative rates only; no commissions are earned or paid by this demo.</p>
-        <div class="item"><strong>Level 1</strong><p>30% — sample rate</p></div>
-        <div class="item"><strong>Level 2</strong><p>5% — sample rate</p></div>
-        <div class="item"><strong>Level 3</strong><p>1% — sample rate</p></div>
-        <label>Your demo referral code</label>
-        <input id="refCode" readonly>
-        <button class="secondary" onclick="copyReferral()">Copy referral code</button>
-        <p id="copyMessage" class="muted"></p>
-      </div>
-    </section>
+<main>
+<section id="auth">
+<div class="card">
+<h2>Welcome to SEMO PAY</h2>
+<p class="small">Create an account or log in.</p>
 
-    <section id="historyPage" class="page hidden">
-      <div class="card">
-        <h2>Request history</h2>
-        <div id="historyList"><p class="muted">No requests yet.</p></div>
-      </div>
-    </section>
-  </section>
+<label>Full name (registration only)</label>
+<input id="fullname" placeholder="Enter full name">
+
+<label>Email address</label>
+<input id="email" type="email" placeholder="Enter email">
+
+<label>Password</label>
+<input id="password" type="password" placeholder="At least 6 characters">
+
+<div class="row">
+<button onclick="signUp()">Sign Up</button>
+<button onclick="signIn()">Login</button>
+</div>
+<p id="authMessage" class="small"></p>
+</div>
+</section>
+
+<section id="dashboard" class="hidden">
+
+<div id="menu" class="card hidden">
+<button onclick="showSection('home')">Dashboard</button>
+<button onclick="showSection('spin')">Lucky Spin</button>
+<button onclick="showSection('invest')">Invest</button>
+<button onclick="showSection('deposit')">Deposit</button>
+<button onclick="showSection('withdraw')">Withdraw</button>
+<button onclick="showSection('history')">History</button>
+<button onclick="window.open('https://chat.whatsapp.com/BZK6rMIgoF8HHormrIzSNz?s=cl&p=a&mlu=4&ilr=4','_blank')">WhatsApp Group</button>
+<button onclick="signOut()">Log Out</button>
+</div>
+
+<div id="home">
+<div class="card green">
+<p>YOUR ACCOUNT BALANCE</p>
+<h1 id="balance">UGX 0</h1>
+<p class="small" style="color:white">Balance will display after secure database setup.</p>
+</div>
+
+<div class="row">
+<button onclick="showSection('spin')">🎡 Lucky Spin</button>
+<button onclick="showSection('invest')">Invest</button>
+</div>
+
+<div class="card">
+<h3>Account Overview</h3>
+<p>Investments: UGX 0</p>
+<p>Returns: UGX 0</p>
+<p>Referral earnings: UGX 0</p>
+</div>
+
+<div class="card">
+<h3>Recent Activity</h3>
+<p id="recent" class="small">No transactions recorded yet.</p>
+</div>
+</div>
+
+<div id="spin" class="hidden">
+<div class="card" style="text-align:center">
+<h2>🎡 SEMO PAY Lucky Spin</h2>
+<p>One welcome spin for each eligible new user.</p>
+<div class="wheel" id="wheel"><span>SPIN!</span></div>
+<button id="spinButton" onclick="spinWheel()">SPIN NOW</button>
+<p id="spinMessage" class="small">Reward: UGX 4,000, subject to secure account verification.</p>
+</div>
+</div>
+
+<div id="invest" class="hidden">
+<div class="card">
+<h2>Investment Section</h2>
+<label>Amount in UGX</label>
+<input id="investmentAmount" type="number" min="0" placeholder="Enter amount">
+<button onclick="calculateInvestment()">Calculate example</button>
+<p id="investmentResult"></p>
+<p class="small">Your requested 20% over 40 days is only an illustration. Returns are not guaranteed and no investment is processed here.</p>
+</div>
+</div>
+
+<div id="deposit" class="hidden">
+<div class="card">
+<h2>Deposit Request</h2>
+<label>Amount in UGX (minimum 10,000)</label>
+<input id="depositAmount" type="number" min="10000" placeholder="Enter amount">
+<label>Payment method</label>
+<select id="depositMethod" style="width:100%;padding:12px">
+<option>MTN Mobile Money</option>
+<option>Airtel Money</option>
+</select>
+<button onclick="requestDeposit()">Submit Deposit Request</button>
+<p id="depositMessage" class="small">Requests are not saved until the secure backend is configured.</p>
+</div>
+</div>
+
+<div id="withdraw" class="hidden">
+<div class="card">
+<h2>Withdrawal Request</h2>
+<label>Amount in UGX (minimum 2,000)</label>
+<input id="withdrawAmount" type="number" min="2000" placeholder="Enter amount">
+<label>Mobile Money number</label>
+<input id="withdrawPhone" type="tel" placeholder="Enter phone number">
+<button onclick="requestWithdrawal()">Submit Withdrawal Request</button>
+<p id="withdrawMessage" class="small">Withdrawals are not processed by this demo.</p>
+</div>
+</div>
+
+<div id="history" class="hidden">
+<div class="card">
+<h2>Transaction History</h2>
+<p id="historyMessage" class="small">Secure transaction history will appear after backend setup.</p>
+</div>
+</div>
+
+<p id="message" class="small"></p>
+</section>
 </main>
 
-<footer>SEMO PAY · Demo website · No real financial transactions</footer>
-
 <script>
-let currentUser = "";
-let records = [];
-let investments = [];
+/*
+Add your Supabase Project URL and Publishable Key below.
+Never use a secret or service-role key in website code.
+*/
+const SUPABASE_URL = "PASTE_YOUR_PROJECT_URL_HERE";
+const SUPABASE_KEY = "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
 
-function showSignup(){
-  document.getElementById("loginForm").classList.add("hidden");
-  document.getElementById("signupForm").classList.remove("hidden");
+let db = null;
+let currentUser = null;
+let spinning = false;
+
+if (window.supabase &&
+    SUPABASE_URL.startsWith("https://") &&
+    SUPABASE_KEY !== "PASTE_YOUR_PUBLISHABLE_KEY_HERE") {
+  db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 }
-function showLogin(){
-  document.getElementById("signupForm").classList.add("hidden");
-  document.getElementById("loginForm").classList.remove("hidden");
+
+function say(id,text){
+  document.getElementById(id).textContent=text;
 }
-function signup(){
-  const name = document.getElementById("signupName").value.trim();
-  if(!name){alert("Please enter your name.");return;}
-  currentUser = name;
-  startApp();
+
+function checkConnection(){
+  if(!db){
+    say("authMessage","Supabase is not connected. Add your Project URL and Publishable Key first.");
+    return false;
+  }
+  return true;
 }
-function login(){
-  const name = document.getElementById("loginName").value.trim();
-  if(!name){alert("Please enter your name.");return;}
-  currentUser = name;
-  startApp();
+
+async function signUp(){
+  if(!checkConnection()) return;
+
+  const name=document.getElementById("fullname").value.trim();
+  const email=document.getElementById("email").value.trim();
+  const password=document.getElementById("password").value;
+
+  if(!name||!email||password.length<6){
+    say("authMessage","Enter your name, email and password of at least 6 characters.");
+    return;
+  }
+
+  say("authMessage","Creating account...");
+
+  const {data,error}=await db.auth.signUp({
+    email,
+    password,
+    options:{data:{full_name:name}}
+  });
+
+  if(error){
+    say("authMessage",error.message);
+    return;
+  }
+
+  if(data.session){
+    currentUser=data.user;
+    openDashboard();
+  }else{
+    say("authMessage","Check your email to confirm registration, then log in.");
+  }
 }
-function startApp(){
+
+async function signIn(){
+  if(!checkConnection()) return;
+
+  const email=document.getElementById("email").value.trim();
+  const password=document.getElementById("password").value;
+
+  if(!email||!password){
+    say("authMessage","Enter your email and password.");
+    return;
+  }
+
+  say("authMessage","Logging in...");
+
+  const {data,error}=await db.auth.signInWithPassword({email,password});
+
+  if(error){
+    say("authMessage",error.message);
+    return;
+  }
+
+  currentUser=data.user;
+  openDashboard();
+}
+
+function openDashboard(){
   document.getElementById("auth").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
+  showSection("home");
+  say("message","You are logged in. Account balances require secure database setup.");
+  loadSpinStatus();
+}
+
+function showSection(name){
+  ["home","spin","invest","deposit","withdraw","history"].forEach(id=>{
+    document.getElementById(id).classList.toggle("hidden",id!==name);
+  });
+  document.getElementById("menu").classList.add("hidden");
+}
+
+function toggleMenu(){
+  document.getElementById("menu").classList.toggle("hidden");
+}
+
+async function loadSpinStatus(){
+  if(!currentUser||!db)return;
+
+  say("spinMessage",
+    "Your one-time UGX 4,000 welcome spin needs secure database verification.");
+}
+
+async function spinWheel(){
+  if(!currentUser||!db){
+    say("spinMessage","Please log in first.");
+    return;
+  }
+
+  if(spinning)return;
+  spinning=true;
+
+  const button=document.getElementById("spinButton");
+  const wheel=document.getElementById("wheel");
+
+  button.disabled=true;
+  wheel.style.transform="rotate(1440deg)";
+  say("spinMessage","Spinning demo wheel...");
+
+  setTimeout(()=>{
+    wheel.style.transform="rotate(0deg)";
+    say("spinMessage",
+      "Demo spin complete. UGX 4,000 has NOT been credited. Secure one-time bonus processing must be configured first.");
+    button.disabled=false;
+    spinning=false;
+  },2600);
+}
+
+function calculateInvestment(){
+  const amount=Number(document.getElementById("investmentAmount").value);
+  if(!amount||amount<=0){
+    say("investmentResult","Enter a valid amount.");
+    return;
+  }
+
+  say("investmentResult",
+    "Illustration only: 20% of UGX "+amount.toLocaleString()+
+    " is UGX "+(amount*.2).toLocaleString()+
+    ". This is not a guaranteed or actual return.");
+}
+
+function requestDeposit(){
+  const amount=Number(document.getElementById("depositAmount").value);
+  if(amount<10000){
+    say("depositMessage","Minimum deposit request is UGX 10,000.");
+    return;
+  }
+  say("depositMessage",
+    "Demo only: no deposit has been received or saved. Secure backend setup is required.");
+}
+
+function requestWithdrawal(){
+  const amount=Number(document.getElementById("withdrawAmount").value);
+  const phone=document.getElementById("withdrawPhone").value.trim();
+
+  if(amount<2000){
+    say("withdrawMessage","Minimum withdrawal request is UGX 2,000.");
+    return;
+  }
+  if(!phone){
+    say("withdrawMessage","Enter your Mobile Money number.");
+    return;
+  }
+
+  say("withdrawMessage",
+    "Demo only: no withdrawal has been sent or saved. Secure backend setup is required.");
+}
+
+async function signOut(){
+  if(db)await db.auth.signOut();
+  currentUser=null;
+  document.getElementById("dashboard").classList.add("hidden");
+  document.getElementById("auth").classList.remove("hidden");
+  say("authMessage","You have logged out.");
+}
+
+if(db){
+  db.auth.getSession().then(({data,error})=>{
+    if(!error&&data.session){
+      currentUser=data.session.user;
+      openDashboard();
+    }
+  });
+}
+</script>
+</body>
+</html>
+
   
