@@ -224,8 +224,7 @@ async function signUp(){
   }
 }
 
-async function signIn(){
-   document.getElementById("forgotBtn").addEventListener("click", resetPassword); 
+
 async function resetPassword(){
   if(!checkConnection()) return;
 
@@ -248,35 +247,45 @@ async function resetPassword(){
       return;
     }
 
-    say("authMessage",
-      "If the request was accepted, check your email for the password reset link.");
+    say("authMessage","Check your email for the password reset link.");
   } catch (error) {
     say("authMessage","Connection error. Please try again later.");
   }
 }
 
+document.getElementById("forgotBtn").addEventListener("click", resetPassword);
+
+async function signIn(){
   if(!checkConnection()) return;
 
-  const email=document.getElementById("email").value.trim();
-  const password=document.getElementById("password").value;
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
-  if(!email||!password){
+  if(!email || !password){
     say("authMessage","Enter your email and password.");
     return;
   }
 
   say("authMessage","Logging in...");
 
-  const {data,error}=await db.auth.signInWithPassword({email,password});
+  try {
+    const { data, error } = await db.auth.signInWithPassword({
+      email,
+      password
+    });
 
-  if(error){
-    say("authMessage",error.message);
-    return;
+    if(error){
+      say("authMessage",error.message);
+      return;
+    }
+
+    currentUser = data.user;
+    openDashboard();
+  } catch (error) {
+    say("authMessage","Connection error. Please try again.");
   }
-
-  currentUser=data.user;
-  openDashboard();
 }
+
 
 function openDashboard(){
   document.getElementById("auth").classList.add("hidden");
