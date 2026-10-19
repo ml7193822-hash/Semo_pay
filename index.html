@@ -53,6 +53,12 @@ main{max-width:520px;margin:auto;padding:16px}
 <button onclick="signUp()">Sign Up</button>
 <button onclick="signIn()">Login</button>
 </div>
+    <div class="row">
+<button onclick="signUp()">Sign Up</button>
+<button onclick="signIn()">Login</button>
+</div>
+
+<button onclick="resetPassword()">Forgot Password?</button>
 <p id="authMessage" class="small"></p>
 </div>
 </section>
@@ -222,6 +228,36 @@ async function signUp(){
 }
 
 async function signIn(){
+    
+async function resetPassword(){
+  if(!checkConnection()) return;
+
+  const email = document.getElementById("email").value.trim();
+
+  if(!email){
+    say("authMessage","Enter your registered email first.");
+    return;
+  }
+
+  say("authMessage","Sending password reset email...");
+
+  try {
+    const { error } = await db.auth.resetPasswordForEmail(email, {
+      redirectTo: "https://ml7193822-hash.github.io/Semo_pay/"
+    });
+
+    if(error){
+      say("authMessage",error.message);
+      return;
+    }
+
+    say("authMessage",
+      "If the request was accepted, check your email for the password reset link.");
+  } catch (error) {
+    say("authMessage","Connection error. Please try again later.");
+  }
+}
+
   if(!checkConnection()) return;
 
   const email=document.getElementById("email").value.trim();
