@@ -55,7 +55,7 @@ main{max-width:520px;margin:auto;padding:16px}
 </div>
 
 
-<button onclick="resetPassword()">Forgot Password?</button>
+<button type="button" id="forgotBtn">Forgot Password?</button>
 <p id="authMessage" class="small"></p>
 </div>
 </section>
@@ -225,7 +225,7 @@ async function signUp(){
 }
 
 async function signIn(){
-    
+   document.getElementById("forgotBtn").addEventListener("click", resetPassword); 
 async function resetPassword(){
   if(!checkConnection()) return;
 
