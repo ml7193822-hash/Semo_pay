@@ -44,7 +44,8 @@ main{max-width:520px;margin:auto;padding:16px}
 <input id="fullname" placeholder="Enter full name">
 
 <label>Phone number</label>
-<input id="phone" type="tel" placeholder="+2567XXXXXXXX">
+<label>Email address</label>
+<input id="email" type="email" placeholder="Enter your email">
 
 <label>Password</label>
 <input id="password" type="password" placeholder="At least 6 characters">
@@ -191,39 +192,44 @@ function checkConnection(){
   return true;
 }
 
-async function signUp(){
-  if(!checkConnection()) return;
 
-  const name=document.getElementById("fullname").value.trim();
-  const phone=document.getElementById("phone").value.trim();
-  const password=document.getElementById("password").value;
+async function signUp() {
+  const name = document.getElementById("fullname").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
-  if(!name||!phone||password.length<6){
-    say("authMessage","Enter your name, email and password of at least 6 characters.");
+  if (!name || !email || password.length < 6) {
+    say("authMessage", "Enter your name, email, and a password of at least 6 characters.");
     return;
   }
 
-  say("authMessage","Creating account...");
+  say("authMessage", "Creating account...");
 
-  const {data,error}=await db.auth.signUp({
-  phone,
-  password,
-  options:{data:{full_name:name}}
-});
-  
+  try {
+    const { data, error } = await db.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: { full_name: name }
+      }
+    });
 
-  if(error){
-    say("authMessage",error.message);
-    return;
-  }
+    if (error) {
+      say("authMessage", error.message);
+      return;
+    }
 
-  if(data.session){
-    currentUser=data.user;
-    openDashboard();
-  }else{
-    say("authMessage","Check your email to confirm registration, then log in.");
+    if (data.session) {
+      currentUser = data.user;
+      openDashboard();
+    } else {
+      say("authMessage", "Account created. Please log in.");
+    }
+  } catch (error) {
+    say("authMessage", "Connection error. Please try again.");
   }
 }
+
 
 
 async function resetPassword(){
@@ -257,37 +263,36 @@ async function resetPassword(){
 
 
 
-async function signIn(){
-  if(!checkConnection()) return;
 
-  const phone = document.getElementById("phone").value.trim();
+async function signIn() {
+  const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
 
-  if(!phone || !password){
-    say("authMessage","Enter your phone number and password.");
+  if (!email || !password) {
+    say("authMessage", "Enter your email and password.");
     return;
   }
 
-  say("authMessage","Logging in...");
+  say("authMessage", "Logging in...");
 
   try {
     const { data, error } = await db.auth.signInWithPassword({
-      phone,
-      password
+      email: email,
+      password: password
     });
 
-    if(error){
-      say("authMessage",error.message);
+    if (error) {
+      say("authMessage", error.message);
       return;
     }
 
     currentUser = data.user;
     openDashboard();
-
   } catch (error) {
-    say("authMessage","Connection error. Please try again.");
+    say("authMessage", "Connection error. Please try again.");
   }
 }
+
 
 
 
