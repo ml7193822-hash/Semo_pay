@@ -210,7 +210,7 @@ async function signUp(){
   password,
   options:{data:{full_name:name}}
 });
-  });
+  
 
   if(error){
     say("authMessage",error.message);
@@ -256,14 +256,15 @@ async function resetPassword(){
 
 
 
+
 async function signIn(){
   if(!checkConnection()) return;
 
   const phone = document.getElementById("phone").value.trim();
   const password = document.getElementById("password").value;
 
-  if(!email || !password){
-    say("authMessage","Enter your email and password.");
+  if(!phone || !password){
+    say("authMessage","Enter your phone number and password.");
     return;
   }
 
@@ -271,9 +272,8 @@ async function signIn(){
 
   try {
     const { data, error } = await db.auth.signInWithPassword({
-  phone,
-  password
-});
+      phone,
+      password
     });
 
     if(error){
@@ -283,10 +283,12 @@ async function signIn(){
 
     currentUser = data.user;
     openDashboard();
+
   } catch (error) {
     say("authMessage","Connection error. Please try again.");
   }
 }
+
 
 
 function openDashboard(){
