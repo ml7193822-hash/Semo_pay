@@ -159,14 +159,14 @@ main{max-width:520px;margin:auto;padding:16px}
 Add your Supabase Project URL and Publishable Key below.
 Never use a secret or service-role key in website code.
 */
-const SUPABASE_URL =
-    "https://npeoonuimebfdogwjdmc.supabase.co/rest/v1/";
-const SUPABASE_KEY = "
-    sb_publishable_QeCmdqpcw0QpY9Y4dN0i5w_NfYf0bBR";
+
+const SUPABASE_URL = "https://npeoonuimebfdogwjdmc.supabase.co";
+const SUPABASE_KEY = "PASTE_YOUR_FULL_PUBLISHABLE_KEY_HERE";
 
 let db = null;
 let currentUser = null;
 let spinning = false;
+
 
 if (window.supabase &&
     SUPABASE_URL.startsWith("https://") &&
