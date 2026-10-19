@@ -43,8 +43,8 @@ main{max-width:520px;margin:auto;padding:16px}
 <label>Full name (registration only)</label>
 <input id="fullname" placeholder="Enter full name">
 
-<label>Email address</label>
-<input id="email" type="email" placeholder="Enter email">
+<label>Phone number</label>
+<input id="phone" type="tel" placeholder="+2567XXXXXXXX">
 
 <label>Password</label>
 <input id="password" type="password" placeholder="At least 6 characters">
@@ -55,7 +55,7 @@ main{max-width:520px;margin:auto;padding:16px}
 </div>
 
 
-<button type="button" id="forgotBtn">Forgot Password?</button>
+<!-- Phone password recovery will be added later -->
 <p id="authMessage" class="small"></p>
 </div>
 </section>
@@ -195,10 +195,10 @@ async function signUp(){
   if(!checkConnection()) return;
 
   const name=document.getElementById("fullname").value.trim();
-  const email=document.getElementById("email").value.trim();
+  const phone=document.getElementById("phone").value.trim();
   const password=document.getElementById("password").value;
 
-  if(!name||!email||password.length<6){
+  if(!name||!phone||password.length<6){
     say("authMessage","Enter your name, email and password of at least 6 characters.");
     return;
   }
@@ -206,9 +206,10 @@ async function signUp(){
   say("authMessage","Creating account...");
 
   const {data,error}=await db.auth.signUp({
-    email,
-    password,
-    options:{data:{full_name:name}}
+  phone,
+  password,
+  options:{data:{full_name:name}}
+});
   });
 
   if(error){
@@ -253,12 +254,12 @@ async function resetPassword(){
   }
 }
 
-document.getElementById("forgotBtn").addEventListener("click", resetPassword);
+
 
 async function signIn(){
   if(!checkConnection()) return;
 
-  const email = document.getElementById("email").value.trim();
+  const phone = document.getElementById("phone").value.trim();
   const password = document.getElementById("password").value;
 
   if(!email || !password){
@@ -270,8 +271,9 @@ async function signIn(){
 
   try {
     const { data, error } = await db.auth.signInWithPassword({
-      email,
-      password
+  phone,
+  password
+});
     });
 
     if(error){
