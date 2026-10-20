@@ -409,21 +409,60 @@ async function requestDeposit(){
   }
 }
 
-function requestWithdrawal(){
-  const amount=Number(document.getElementById("withdrawAmount").value);
-  const phone=document.getElementById("withdrawPhone").value.trim();
+async function requestWithdrawal(){
+const amount = Number(document.getElementById("withdrawAmount").value);
+const phone = document.getElementById("withdrawPhone").value.trim();
 
-  if(amount<2000){
-    say("withdrawMessage","Minimum withdrawal request is UGX 2,000.");
-    return;
-  }
-  if(!phone){
-    say("withdrawMessage","Enter your Mobile Money number.");
-    return;
-  }
+if (!db) {
+say("withdrawMessage", "Database connection is unavailable. Please try again.");
+return;
+}
 
-  say("withdrawMessage",
-    "Demo only: no withdrawal has been sent or saved. Secure backend setup is required.");
+if (!currentUser) {
+say("withdrawMessage", "Please log in first.");
+return;
+}
+
+if (!Number.isFinite(amount) || amount < 2000) {
+say("withdrawMessage", "Minimum withdrawal request is UGX 2,000.");
+return;
+}
+
+if (!phone) {
+say("withdrawMessage", "Enter your Mobile Money number.");
+return;
+}
+
+const button = document.querySelector("#withdraw button");
+button.disabled = true;
+say("withdrawMessage", "Submitting your withdrawal request...");
+
+try {
+const { error } = await db
+.from("withdrawal_requests")
+.insert({
+user_id: currentUser.id,
+amount: amount,
+phone_number: phone,
+status: "pending"
+});
+
+if (error) {
+  say("withdrawMessage", "Request failed: " + error.message);
+  return;
+}
+
+say("withdrawMessage",
+  "Withdrawal request submitted successfully. Status: Pending. Payment has not been sent.");
+
+document.getElementById("withdrawAmount").value = "";
+document.getElementById("withdrawPhone").value = "";
+
+} catch (error) {
+say("withdrawMessage", "Could not submit request. Check your connection and try again.");
+} finally {
+button.disabled = false;
+}
 }
 
 async function signOut(){
