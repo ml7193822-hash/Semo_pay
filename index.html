@@ -438,14 +438,16 @@ button.disabled = true;
 say("withdrawMessage", "Submitting your withdrawal request...");
 
 try {
+
 const { error } = await db
-.from("withdrawal_requests")
-.insert({
-user_id: currentUser.id,
-amount: amount,
-payout_phone 
-status: "pending"
-});
+  .from("withdrawal_requests")
+  .insert({
+    user_id: currentUser.id,
+    amount: amount,
+    payout_phone: phone,
+    status: "pending"
+  });
+
 
 if (error) {
   say("withdrawMessage", "Request failed: " + error.message);
