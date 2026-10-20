@@ -439,14 +439,17 @@ async function requestWithdrawal() {
   say("withdrawMessage", "Submitting your withdrawal request...");
 
   try {
-    const { error } = await db
-      .from("withdrawal_requests")
-      .insert({
-        user_id: currentUser.id,
-        amount: amount,
-        payout_phone: phone,
-        payout_method: "Mobile Money",
-        status: "pending"
+    
+const { error } = await db
+  .from("withdrawal_requests")
+  .insert({
+    user_id: currentUser.id,
+    amount: amount,
+    payout_phone: phone,
+    payout_method: "MTN",
+    status: "pending"
+  });
+
       });
 
     if (error) {
