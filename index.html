@@ -264,7 +264,10 @@ async function resetPassword(){
 
 
 
+
 async function signIn() {
+  if (!checkConnection()) return;
+
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
 
@@ -288,10 +291,12 @@ async function signIn() {
 
     currentUser = data.user;
     openDashboard();
+
   } catch (error) {
-    say("authMessage", "Connection error. Please try again.");
+    say("authMessage", "Login failed. Please refresh and try again.");
   }
 }
+
 
 
 
