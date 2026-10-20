@@ -441,12 +441,15 @@ try {
 
 const { error } = await db
   .from("withdrawal_requests")
-  .insert({
+  .
+.insert({
     user_id: currentUser.id,
     amount: amount,
     payout_phone: phone,
+    payout_method: phone.startsWith("07") ? "Mobile Money" : "Mobile Money",
     status: "pending"
-  });
+});
+
 
 
 if (error) {
