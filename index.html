@@ -390,7 +390,7 @@ async function requestDeposit(){
         user_id: currentUser.id,
         amount: amount,
         status: "pending",
-        payment_method: method
+        payment_method: method.startsWith("MTN") ? "MTN" : "AIRTEL"
       });
 
     if (error) {
