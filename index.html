@@ -222,31 +222,34 @@ function showPage(id) {
   if (id === "adminPage") loadAdmin();
 }
 
-function investmentOptions() {
+
+async function investmentOptions() {
   const amount = Number(document.getElementById("investAmount").value);
   const info = document.getElementById("investmentInfo");
 
   info.classList.remove("hidden");
+  info.textContent = "Checking your investment...";
 
-  if (!amount || amount < 10000) {
-    info.textContent = "Enter an amount of at least UGX 10,000.";
+  if (!Number.isSafeInteger(amount) || amount < 10000) {
+    info.textContent = "Choose an investment of at least UGX 10,000.";
     return;
   }
 
-  if (!Number.isFinite(amount) || !Number.isSafeInteger(amount)) {
-    info.textContent = "Enter a valid whole-number amount.";
+  if (!profile || !profile.id) {
+    info.textContent = "Please log in again before investing.";
     return;
   }
 
-  if (!profile || amount > Number(profile.balance || 0)) {
-    info.textContent = "The amount is greater than your displayed available balance.";
+  if (amount > Number(profile.balance || 0)) {
+    info.textContent = "Your balance is too low for this amount.";
     return;
   }
 
   info.textContent =
     "Your amount is UGX " + amount.toLocaleString("en-UG") +
-    ". Investment submission is not active yet. No money has been deducted.";
+    ". We must configure secure balance deduction before submission. No money has been deducted.";
 }
+
 
 function showDepositNumber() {
   const method = document.getElementById("depositMethod").value;
