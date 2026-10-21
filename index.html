@@ -497,6 +497,43 @@ async function loadAdminRequests() {
   }
 }
 
+
+async function adminDecision(requestId, decision, tableName) {
+  if (!db || !currentUser || !isAdmin) {
+    alert("Admin access required.");
+    return;
+  }
+
+  if (!["approved", "rejected"].includes(decision)) return;
+
+  const confirmed = confirm(
+    "Are you sure you want to mark this request as " + decision + "?"
+  );
+
+  if (!confirmed) return;
+
+  const { data, error } = await db
+    .from(tableName)
+    .update({ status: decision })
+    .eq("id", requestId)
+    .eq("status", "pending")
+    .select("id");
+
+  if (error) {
+    alert("Update failed: " + error.message +
+      ". An admin database permission may be missing.");
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    alert("No request updated. It may no longer be pending, or database permissions may be missing.");
+    return;
+  }
+
+  alert("Request marked " + decision + ".");
+  await loadAdminRequests();
+}
+
 function renderAdminList(elementId, result) {
   const element = document.getElementById(elementId);
 
@@ -506,23 +543,48 @@ function renderAdminList(elementId, result) {
   }
 
   const rows = result.data || [];
+
   if (!rows.length) {
     element.textContent = "No requests found.";
     return;
   }
 
-  element.innerHTML = rows.map(row =>
-    '<div class="item"><strong>UGX ' +
-    escapeHTML(Number(row.amount).toLocaleString()) +
-    '</strong><br>Status: ' + escapeHTML(row.status) +
-    '<br>User ID: ' + escapeHTML(row.user_id) +
-    '<br>Method: ' + escapeHTML(row.payment_method || row.payout_method || "") +
-    (row.payout_phone ? '<br>Phone: ' + escapeHTML(row.payout_phone) : '') +
-    '<br><span class="small">' +
-    escapeHTML(row.created_at ? new Date(row.created_at).toLocaleString() : "") +
-    '</span></div>'
-  ).join("");
+  const tableName = elementId === "adminWithdrawals"
+    ? "withdrawal_requests"
+    : "deposit_requests";
+
+  element.innerHTML = rows.map(row => {
+    const pending = row.status === "pending";
+
+    return '<div class="item">' +
+      '<strong>UGX ' +
+      escapeHTML(Number(row.amount).toLocaleString()) +
+      '</strong><br>Status: ' + escapeHTML(row.status) +
+      '<br>User ID: ' + escapeHTML(row.user_id) +
+      '<br>Method: ' +
+      escapeHTML(row.payment_method || row.payout_method || "") +
+      (row.payout_phone
+        ? '<br>Phone: ' + escapeHTML(row.payout_phone)
+        : '') +
+      '<br><span class="small">' +
+      escapeHTML(row.created_at
+        ? new Date(row.created_at).toLocaleString()
+        : "") +
+      '</span>' +
+      (pending
+        ? '<div class="row">' +
+          '<button onclick="adminDecision(\'' +
+          escapeHTML(row.id) + '\',\'approved\',\'' +
+          tableName + '\')">Approve</button>' +
+          '<button style="background:#b42318" onclick="adminDecision(\'' +
+          escapeHTML(row.id) + '\',\'rejected\',\'' +
+          tableName + '\')">Reject</button>' +
+          '</div>'
+        : '') +
+      '</div>';
+  }).join("");
 }
+
 
 async function signOut() {
   if (db) {
