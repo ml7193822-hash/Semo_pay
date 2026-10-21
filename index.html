@@ -223,6 +223,7 @@ function showPage(id) {
 }
 
 
+
 async function investmentOptions() {
   const amount = Number(document.getElementById("investAmount").value);
   const info = document.getElementById("investmentInfo");
@@ -235,7 +236,7 @@ async function investmentOptions() {
     return;
   }
 
-  if (!profile || !profile.id) {
+  if (!currentUser || !profile) {
     info.textContent = "Please log in again before investing.";
     return;
   }
@@ -245,9 +246,28 @@ async function investmentOptions() {
     return;
   }
 
-  info.textContent =
-    "Your amount is UGX " + amount.toLocaleString("en-UG") +
-    ". We must configure secure balance deduction before submission. No money has been deducted.";
+  try {
+    const { data, error } = await db.rpc("submit_investment", {
+      p_amount: amount
+    });
+
+    if (error) {
+      info.textContent = "Investment failed: " + error.message;
+      return;
+    }
+
+    info.textContent = data || "Investment submitted successfully.";
+
+    await loadProfile();
+
+    const balanceElement = document.getElementById("investBalance");
+    if (balanceElement && profile) {
+      balanceElement.textContent =
+        "UGX " + Number(profile.balance || 0).toLocaleString("en-UG");
+    }
+  } catch (err) {
+    info.textContent = "Could not submit investment. Please try again.";
+  }
 }
 
 
