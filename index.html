@@ -162,13 +162,35 @@ function message(text, isError=false) {
 function money(n) {
   return "UGX " + Number(n || 0).toLocaleString("en-UG");
 }
+
 function showPage(id) {
-  ["dashboardPage","depositPage","withdrawPage","historyPage","adminPage"]
-    .forEach(x => document.getElementById(x).classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
+  const pages = [
+    "dashboardPage",
+    "depositPage",
+    "withdrawPage",
+    "historyPage",
+    "investPage",
+    "adminPage"
+  ];
+
+  pages.forEach(function(page) {
+    const el = document.getElementById(page);
+    if (el) el.classList.add("hidden");
+  });
+
+  const selected = document.getElementById(id);
+
+  if (!selected) {
+    message("The Invest page has not been created yet.", true);
+    return;
+  }
+
+  selected.classList.remove("hidden");
+
   if (id === "historyPage") loadHistory();
   if (id === "adminPage") loadAdmin();
 }
+
 function showDepositNumber() {
   const method = document.getElementById("depositMethod").value;
   const display = document.getElementById("depositNumber");
