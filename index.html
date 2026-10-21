@@ -6,229 +6,197 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SEMO PAY</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f3f7f4;color:#183b2a;font-family:Arial,sans-serif}
-header{background:#126b3b;color:white;padding:17px;display:flex;justify-content:space-between;align-items:center}
+header{background:#126b3b;color:white;padding:16px;display:flex;justify-content:space-between;align-items:center}
 header h2{margin:0}
+main{max-width:600px;margin:auto;padding:16px}
+.card{background:white;border-radius:14px;padding:18px;margin:14px 0;box-shadow:0 2px 9px #0000000c}
 button{border:0;border-radius:9px;padding:13px 16px;background:#168348;color:white;font-weight:bold;cursor:pointer;margin:3px}
 button:disabled{opacity:.5}
-input{width:100%;padding:13px;margin:7px 0 12px;border:1px solid #ccd8cf;border-radius:8px;font-size:16px}
-main{max-width:520px;margin:auto;padding:16px}
-.card{background:white;border-radius:14px;padding:18px;margin:14px 0;box-shadow:0 2px 9px #0000000c}
+input,select{width:100%;padding:13px;margin:7px 0 12px;border:1px solid #ccd8cf;border-radius:8px;font-size:16px}
 .hidden{display:none!important}
 .small{font-size:13px;color:#65766b;line-height:1.5}
 .green{background:#126b3b;color:white}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 .row button{flex:1}
-.wheel{width:250px;height:250px;max-width:100%;border-radius:50%;margin:24px auto;background:conic-gradient(#ffdb76 0 60deg,#fff 60deg 120deg,#b9e6c7 120deg 180deg,#fff 180deg 240deg,#ffdb76 240deg 300deg,#b9e6c7 300deg 360deg);border:6px solid #126b3b;display:flex;align-items:center;justify-content:center;position:relative;transition:transform 2.5s ease-out}
-.wheel:before{content:"";position:absolute;top:-18px;border-left:15px solid transparent;border-right:15px solid transparent;border-bottom:27px solid #126b3b}
-.wheel span{background:white;border:3px solid #126b3b;border-radius:50%;padding:20px;font-weight:bold}
+.item{border-bottom:1px solid #e0e8e2;padding:10px 0;overflow-wrap:anywhere}
 </style>
 </head>
-
 <body>
+
 <header>
-<h2>SEMO PAY</h2>
-<button onclick="toggleMenu()">☰ Menu</button>
+  <h2>SEMO PAY</h2>
+  <button id="menuButton" class="hidden" onclick="toggleMenu()">☰ Menu</button>
 </header>
 
 <main>
-<section id="auth">
-<div class="card">
-<h2>Welcome to SEMO PAY</h2>
-<p class="small">Create an account or log in.</p>
+  <section id="auth">
+    <div class="card">
+      <h2>Welcome to SEMO PAY</h2>
+      <p class="small">Create an account or log in.</p>
 
-<label>Full name (registration only)</label>
-<input id="fullname" placeholder="Enter full name">
+      <label>Full name (registration only)</label>
+      <input id="fullname" placeholder="Enter full name">
 
-<label>Phone number</label>
-<label>Email address</label>
-<input id="email" type="email" placeholder="Enter your email">
+      <label>Email address</label>
+      <input id="email" type="email" autocomplete="email" placeholder="Enter your email">
 
-<label>Password</label>
-<input id="password" type="password" placeholder="At least 6 characters">
+      <label>Password</label>
+      <input id="password" type="password" autocomplete="current-password" placeholder="At least 6 characters">
 
-<div class="row">
-<button onclick="signUp()">Sign Up</button>
-<button onclick="signIn()">Login</button>
-</div>
+      <div class="row">
+        <button onclick="signUp()">Sign Up</button>
+        <button onclick="signIn()">Login</button>
+      </div>
 
+      <button onclick="resetPassword()">Reset Password</button>
+      <p id="authMessage" class="small" role="status"></p>
+    </div>
+  </section>
 
-<!-- Phone password recovery will be added later -->
-<p id="authMessage" class="small"></p>
+  <section id="dashboard" class="hidden">
+    <div id="menu" class="card hidden">
+      <button onclick="showSection('home')">Dashboard</button>
+      <button onclick="showSection('invest')">Investment Calculator</button>
+      <button onclick="showSection('deposit')">Deposit</button>
+      <button onclick="showSection('withdraw')">Withdraw</button>
+      <button onclick="showSection('history')">History</button>
+      <button onclick="window.open('https://chat.whatsapp.com/BZK6rMIgoF8HHormrIzSNz?s=cl&p=a&mlu=4&ilr=4','_blank')">WhatsApp Group</button>
+      <button onclick="signOut()">Log Out</button>
+    </div>
 
+    <div id="home" class="userSection">
+      <div class="card green">
+        <p>YOUR ACCOUNT BALANCE</p>
+        <h1>UGX 0</h1>
+        <p class="small" style="color:white">Your actual balance is not calculated by this page.</p>
+      </div>
+      <div class="card">
+        <h3>Welcome!</h3>
+        <p id="userEmail" class="small"></p>
+        <p>Use the menu to submit requests and view your request history.</p>
+        <p class="small">No deposit or withdrawal is processed automatically by this website.</p>
+      </div>
+    </div>
 
-</div>
+    <div id="invest" class="userSection hidden">
+      <div class="card">
+        <h2>Investment Calculator</h2>
+        <label>Amount in UGX</label>
+        <input id="investmentAmount" type="number" min="1" placeholder="Enter amount">
+        <button onclick="calculateInvestment()">Calculate example</button>
+        <p id="investmentResult" class="small"></p>
+        <p class="small">Illustration only. Returns are not guaranteed, and this calculator does not process investments.</p>
+      </div>
+    </div>
 
-<div id="adminDashboard" class="hidden">
-  <div class="card">
-    <h2>SEMO PAY Admin Dashboard</h2>
-    <p>Review deposit and withdrawal requests.</p>
-    <button onclick="loadAdminRequests()">Refresh Requests</button>
-  </div>
+    <div id="deposit" class="userSection hidden">
+      <div class="card">
+        <h2>Deposit Request</h2>
+        <label>Amount in UGX (minimum 10,000)</label>
+        <input id="depositAmount" type="number" min="10000" placeholder="Enter amount">
+        <label>Payment method</label>
+        <select id="depositMethod">
+          <option value="MTN">MTN Mobile Money</option>
+          <option value="AIRTEL">Airtel Money</option>
+        </select>
+        <button id="depositButton" onclick="requestDeposit()">Submit Deposit Request</button>
+        <p id="depositMessage" class="small" role="status"></p>
+      </div>
+    </div>
 
-  <div class="card">
-    <h3>Deposit Requests</h3>
-    <div id="adminDeposits">No requests loaded yet.</div>
-  </div>
+    <div id="withdraw" class="userSection hidden">
+      <div class="card">
+        <h2>Withdrawal Request</h2>
+        <label>Amount in UGX (minimum 2,000)</label>
+        <input id="withdrawAmount" type="number" min="2000" placeholder="Enter amount">
+        <label>Mobile Money number</label>
+        <input id="withdrawPhone" type="tel" placeholder="Enter phone number">
+        <label>Payment method</label>
+        <select id="withdrawMethod">
+          <option value="MTN">MTN Mobile Money</option>
+          <option value="AIRTEL">Airtel Money</option>
+        </select>
+        <button id="withdrawButton" onclick="requestWithdrawal()">Submit Withdrawal Request</button>
+        <p id="withdrawMessage" class="small" role="status"></p>
+      </div>
+    </div>
 
-  <div class="card">
-    <h3>Withdrawal Requests</h3>
-    <div id="adminWithdrawals">No requests loaded yet.</div>
-  </div>
+    <div id="history" class="userSection hidden">
+      <div class="card">
+        <h2>My Request History</h2>
+        <button onclick="loadHistory()">Refresh History</button>
+        <h3>Deposits</h3>
+        <div id="depositHistory">Loading...</div>
+        <h3>Withdrawals</h3>
+        <div id="withdrawHistory">Loading...</div>
+        <p id="historyMessage" class="small" role="status"></p>
+      </div>
+    </div>
 
-  <p id="adminMessage" class="small"></p>
-</div>
+    <section id="adminDashboard" class="hidden">
+      <div class="card">
+        <h2>Admin Dashboard</h2>
+        <p>Review submitted deposit and withdrawal requests.</p>
+        <button onclick="loadAdminRequests()">Refresh Requests</button>
+        <p id="adminMessage" class="small" role="status"></p>
+      </div>
+      <div class="card">
+        <h3>Deposit Requests</h3>
+        <div id="adminDeposits">Not loaded yet.</div>
+      </div>
+      <div class="card">
+        <h3>Withdrawal Requests</h3>
+        <div id="adminWithdrawals">Not loaded yet.</div>
+      </div>
+    </section>
 
-<p id="message" class="small"></p>
-  
-</section>
+    <p id="message" class="small" role="status"></p>
+  </section>
 </main>
 
 <script>
-
-
-<section id="dashboard" class="hidden">
-
-<div id="menu" class="card hidden">
-<button onclick="showSection('home')">Dashboard</button>
-<button onclick="showSection('spin')">Lucky Spin</button>
-<button onclick="showSection('invest')">Invest</button>
-<button onclick="showSection('deposit')">Deposit</button>
-<button onclick="showSection('withdraw')">Withdraw</button>
-<button onclick="showSection('history')">History</button>
-<button onclick="window.open('https://chat.whatsapp.com/BZK6rMIgoF8HHormrIzSNz?s=cl&p=a&mlu=4&ilr=4','_blank')">WhatsApp Group</button>
-<button onclick="signOut()">Log Out</button>
-</div>
-
-<div id="home">
-<div class="card green">
-<p>YOUR ACCOUNT BALANCE</p>
-<h1 id="balance">UGX 0</h1>
-<p class="small" style="color:white">Balance will display after secure database setup.</p>
-</div>
-
-<div class="row">
-<button onclick="showSection('spin')">🎡 Lucky Spin</button>
-<button onclick="showSection('invest')">Invest</button>
-</div>
-
-<div class="card">
-<h3>Account Overview</h3>
-<p>Investments: UGX 0</p>
-<p>Returns: UGX 0</p>
-<p>Referral earnings: UGX 0</p>
-</div>
-
-<div class="card">
-<h3>Recent Activity</h3>
-<p id="recent" class="small">No transactions recorded yet.</p>
-</div>
-</div>
-
-<div id="spin" class="hidden">
-<div class="card" style="text-align:center">
-<h2>🎡 SEMO PAY Lucky Spin</h2>
-<p>One welcome spin for each eligible new user.</p>
-<div class="wheel" id="wheel"><span>SPIN!</span></div>
-<button id="spinButton" onclick="spinWheel()">SPIN NOW</button>
-<p id="spinMessage" class="small">Reward: UGX 4,000, subject to secure account verification.</p>
-</div>
-</div>
-
-<div id="invest" class="hidden">
-<div class="card">
-<h2>Investment Section</h2>
-<label>Amount in UGX</label>
-<input id="investmentAmount" type="number" min="0" placeholder="Enter amount">
-<button onclick="calculateInvestment()">Calculate example</button>
-<p id="investmentResult"></p>
-<p class="small">Your requested 20% over 40 days is only an illustration. Returns are not guaranteed and no investment is processed here.</p>
-</div>
-</div>
-
-<div id="deposit" class="hidden">
-<div class="card">
-<h2>Deposit Request</h2>
-<label>Amount in UGX (minimum 10,000)</label>
-<input id="depositAmount" type="number" min="10000" placeholder="Enter amount">
-<label>Payment method</label>
-<select id="depositMethod" style="width:100%;padding:12px">
-<option>MTN Mobile Money</option>
-<option>Airtel Money</option>
-</select>
-<button onclick="requestDeposit()">Submit Deposit Request</button>
-<p id="depositMessage" class="small">Requests are not saved until the secure backend is configured.</p>
-</div>
-</div>
-
-<div id="withdraw" class="hidden">
-<div class="card">
-<h2>Withdrawal Request</h2>
-<label>Amount in UGX (minimum 2,000)</label>
-<input id="withdrawAmount" type="number" min="2000" placeholder="Enter amount">
-<label>Mobile Money number</label>
-<input id="withdrawPhone" type="tel" placeholder="Enter phone number">
-<button onclick="requestWithdrawal()">Submit Withdrawal Request</button>
-<p id="withdrawMessage" class="small">Withdrawals are not processed by this demo.</p>
-</div>
-</div>
-
-<div id="history" class="hidden">
-<div class="card">
-<h2>Transaction History</h2>
-<p id="historyMessage" class="small">Secure transaction history will appear after backend setup.</p>
-</div>
-</div>
-
-<p id="message" class="small"></p>
-</section>
-</main>
-
-<script>
-/*
-Add your Supabase Project URL and Publishable Key below.
-Never use a secret or service-role key in website code.
-*/
-
-const SUPABASE_URL = 
-    "https://npeoonuimebfdogwjdmc.supabase.co";
-const SUPABASE_KEY = 
-    "sb_publishable_QeCmdqpcw0QpY9Y4dN0i5w_NfYf0bBR";
+const SUPABASE_URL = "https://npeoonuimebfdogwjdmc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_QeCmdqpcw0QpY9Y4dN0i5w_NfYf0bBR";
 
 let db = null;
 let currentUser = null;
-let spinning = false;
+let isAdmin = false;
 
-
-if (window.supabase &&
-    SUPABASE_URL.startsWith("https://") &&
-    SUPABASE_KEY !== "PASTE_YOUR_PUBLISHABLE_KEY_HERE") {
+if (window.supabase) {
   db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 }
 
-function say(id,text){
-  document.getElementById(id).textContent=text;
+function say(id, message) {
+  const element = document.getElementById(id);
+  if (element) element.textContent = message;
 }
 
-function checkConnection(){
-  if(!db){
-    say("authMessage","Supabase is not connected. Add your Project URL and Publishable Key first.");
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, character => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  })[character]);
+}
+
+function checkConnection() {
+  if (!db) {
+    say("authMessage", "Connection library did not load. Check your internet and refresh.");
     return false;
   }
   return true;
 }
 
-
 async function signUp() {
+  if (!checkConnection()) return;
+
   const name = document.getElementById("fullname").value.trim();
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
 
   if (!name || !email || password.length < 6) {
-    say("authMessage", "Enter your name, email, and a password of at least 6 characters.");
+    say("authMessage", "Enter your full name, email, and a password of at least 6 characters.");
     return;
   }
 
@@ -236,63 +204,26 @@ async function signUp() {
 
   try {
     const { data, error } = await db.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: { full_name: name }
-      }
+      email,
+      password,
+      options: { data: { full_name: name } }
     });
 
     if (error) {
-      say("authMessage", error.message);
+      say("authMessage", "Sign-up failed: " + error.message);
       return;
     }
 
-    if (data.session) {
+    if (data.session && data.user) {
       currentUser = data.user;
-      openDashboard();
+      await openDashboard();
     } else {
-      say("authMessage", "Account created. Please log in.");
+      say("authMessage", "Account created. Check your email if confirmation is required, then log in.");
     }
   } catch (error) {
-    say("authMessage", "Connection error. Please try again.");
+    say("authMessage", "Connection error. Refresh the page and try again.");
   }
 }
-
-
-
-async function resetPassword(){
-  if(!checkConnection()) return;
-
-  const email = document.getElementById("email").value.trim();
-
-  if(!email){
-    say("authMessage","Enter your registered email first.");
-    return;
-  }
-
-  say("authMessage","Sending password reset email...");
-
-  try {
-    const { error } = await db.auth.resetPasswordForEmail(email, {
-      redirectTo: "https://ml7193822-hash.github.io/Semo_pay/"
-    });
-
-    if(error){
-      say("authMessage",error.message);
-      return;
-    }
-
-    say("authMessage","Check your email for the password reset link.");
-  } catch (error) {
-    say("authMessage","Connection error. Please try again later.");
-  }
-}
-
-
-
-
-
 
 async function signIn() {
   if (!checkConnection()) return;
@@ -308,155 +239,154 @@ async function signIn() {
   say("authMessage", "Logging in...");
 
   try {
-    const { data, error } = await db.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
+    const { data, error } = await db.auth.signInWithPassword({ email, password });
 
     if (error) {
-      say("authMessage", error.message);
+      say("authMessage", "Login failed: " + error.message);
+      return;
+    }
+
+    if (!data.user) {
+      say("authMessage", "Login did not return a user. Please try again.");
       return;
     }
 
     currentUser = data.user;
-    openDashboard();
-
+    await openDashboard();
   } catch (error) {
-    say("authMessage", "Login failed. Please refresh and try again.");
+    say("authMessage", "Login error: " + (error.message || "Please refresh and try again."));
   }
 }
 
+async function resetPassword() {
+  if (!checkConnection()) return;
 
-
-
-
-function openDashboard(){
-  document.getElementById("auth").classList.add("hidden");
-  document.getElementById("dashboard").classList.remove("hidden");
-  showSection("home");
-  say("message","You are logged in. Account balances require secure database setup.");
-  loadSpinStatus();
-}
-
-function showSection(name){
-  ["home","spin","invest","deposit","withdraw","history"].forEach(id=>{
-    document.getElementById(id).classList.toggle("hidden",id!==name);
-  });
-  document.getElementById("menu").classList.add("hidden");
-}
-
-function toggleMenu(){
-  document.getElementById("menu").classList.toggle("hidden");
-}
-
-async function loadSpinStatus(){
-  if(!currentUser||!db)return;
-
-  say("spinMessage",
-    "Your one-time UGX 4,000 welcome spin needs secure database verification.");
-}
-
-async function spinWheel(){
-  if(!currentUser||!db){
-    say("spinMessage","Please log in first.");
+  const email = document.getElementById("email").value.trim();
+  if (!email) {
+    say("authMessage", "Enter your registered email first.");
     return;
   }
 
-  if(spinning)return;
-  spinning=true;
+  say("authMessage", "Sending password reset email...");
 
-  const button=document.getElementById("spinButton");
-  const wheel=document.getElementById("wheel");
+  try {
+    const { error } = await db.auth.resetPasswordForEmail(email, {
+      redirectTo: "https://ml7193822-hash.github.io/Semo_pay/"
+    });
 
-  button.disabled=true;
-  wheel.style.transform="rotate(1440deg)";
-  say("spinMessage","Spinning demo wheel...");
-
-  setTimeout(()=>{
-    wheel.style.transform="rotate(0deg)";
-    say("spinMessage",
-      "Demo spin complete. UGX 4,000 has NOT been credited. Secure one-time bonus processing must be configured first.");
-    button.disabled=false;
-    spinning=false;
-  },2600);
+    say("authMessage", error ? error.message : "If the account exists, a reset email will be sent.");
+  } catch (error) {
+    say("authMessage", "Could not send reset email. Please try again.");
+  }
 }
 
-function calculateInvestment(){
-  const amount=Number(document.getElementById("investmentAmount").value);
-  if(!amount||amount<=0){
-    say("investmentResult","Enter a valid amount.");
+async function openDashboard() {
+  document.getElementById("auth").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
+  document.getElementById("menuButton").classList.remove("hidden");
+
+  say("userEmail", currentUser ? currentUser.email : "");
+  say("message", "You are logged in.");
+
+  isAdmin = false;
+
+  try {
+    const { data, error } = await db
+      .from("profiles")
+      .select("role")
+      .eq("id", currentUser.id)
+      .maybeSingle();
+
+    if (!error && data && data.role === "admin") {
+      isAdmin = true;
+    }
+  } catch (error) {
+    isAdmin = false;
+  }
+
+  document.getElementById("adminDashboard").classList.toggle("hidden", !isAdmin);
+  showSection("home");
+
+  if (isAdmin) await loadAdminRequests();
+}
+
+function showSection(name) {
+  document.querySelectorAll(".userSection").forEach(section => {
+    section.classList.toggle("hidden", section.id !== name);
+  });
+  document.getElementById("menu").classList.add("hidden");
+
+  if (name === "history") loadHistory();
+}
+
+function toggleMenu() {
+  document.getElementById("menu").classList.toggle("hidden");
+}
+
+function calculateInvestment() {
+  const amount = Number(document.getElementById("investmentAmount").value);
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    say("investmentResult", "Enter a valid amount.");
     return;
   }
 
   say("investmentResult",
-    "Illustration only: 20% of UGX "+amount.toLocaleString()+
-    " is UGX "+(amount*.2).toLocaleString()+
+    "Illustration only: 20% of UGX " + amount.toLocaleString() +
+    " is UGX " + (amount * 0.2).toLocaleString() +
     ". This is not a guaranteed or actual return.");
 }
 
-async function requestDeposit(){
-  const amount = Number(document.getElementById("depositAmount").value);
-  const method = document.getElementById("depositMethod").value;
-
-  if (!db) {
-    say("depositMessage", "Database connection is unavailable. Please try again.");
-    return;
-  }
-
+async function requestDeposit() {
+  if (!checkConnection()) return;
   if (!currentUser) {
     say("depositMessage", "Please log in first.");
     return;
   }
+
+  const amount = Number(document.getElementById("depositAmount").value);
+  const method = document.getElementById("depositMethod").value;
 
   if (!Number.isFinite(amount) || amount < 10000) {
     say("depositMessage", "Minimum deposit request is UGX 10,000.");
     return;
   }
 
-  const button = document.querySelector("#deposit button");
+  const button = document.getElementById("depositButton");
   button.disabled = true;
-  say("depositMessage", "Submitting your request...");
+  say("depositMessage", "Submitting request...");
 
   try {
-    const { error } = await db
-      .from("deposit_requests")
-      .insert({
-        user_id: currentUser.id,
-        amount: amount,
-        status: "pending",
-        payment_method: method.startsWith("MTN") ? "MTN" : "AIRTEL"
-      });
+    const { error } = await db.from("deposit_requests").insert({
+      user_id: currentUser.id,
+      amount,
+      status: "pending",
+      payment_method: method
+    });
 
     if (error) {
       say("depositMessage", "Request failed: " + error.message);
-      return;
+    } else {
+      say("depositMessage", "Request submitted. Status: Pending. This does not confirm payment received.");
+      document.getElementById("depositAmount").value = "";
     }
-
-    say("depositMessage",
-      "Deposit request submitted successfully. Status: Pending. This does not confirm payment received.");
-
-    document.getElementById("depositAmount").value = "";
   } catch (error) {
-    say("depositMessage", "Could not submit request. Check your connection and try again.");
+    say("depositMessage", "Connection error. Please try again.");
   } finally {
     button.disabled = false;
   }
 }
 
-
 async function requestWithdrawal() {
-  const amount = Number(document.getElementById("withdrawAmount").value);
-  const phone = document.getElementById("withdrawPhone").value.trim();
-
-  if (!db) {
-    say("withdrawMessage", "Database connection is unavailable. Please try again.");
-    return;
-  }
-
+  if (!checkConnection()) return;
   if (!currentUser) {
     say("withdrawMessage", "Please log in first.");
     return;
   }
+
+  const amount = Number(document.getElementById("withdrawAmount").value);
+  const phone = document.getElementById("withdrawPhone").value.trim();
+  const method = document.getElementById("withdrawMethod").value;
 
   if (!Number.isFinite(amount) || amount < 2000) {
     say("withdrawMessage", "Minimum withdrawal request is UGX 2,000.");
@@ -468,61 +398,171 @@ async function requestWithdrawal() {
     return;
   }
 
-  const button = document.querySelector("#withdraw button");
+  const button = document.getElementById("withdrawButton");
   button.disabled = true;
-  say("withdrawMessage", "Submitting your withdrawal request...");
+  say("withdrawMessage", "Submitting request...");
 
   try {
-    
-const { error } = await db
-  .from("withdrawal_requests")
-  .insert({
-    user_id: currentUser.id,
-    amount: amount,
-    payout_phone: phone,
-    payout_method: "MTN",
-    status: "pending"
-  });
-
-
+    const { error } = await db.from("withdrawal_requests").insert({
+      user_id: currentUser.id,
+      amount,
+      payout_phone: phone,
+      payout_method: method,
+      status: "pending"
+    });
 
     if (error) {
       say("withdrawMessage", "Request failed: " + error.message);
-      return;
+    } else {
+      say("withdrawMessage", "Request submitted. Status: Pending. Payment has not been sent.");
+      document.getElementById("withdrawAmount").value = "";
+      document.getElementById("withdrawPhone").value = "";
     }
-
-    say("withdrawMessage",
-      "Withdrawal request submitted successfully. Status: Pending. Payment has not been sent.");
-
-    document.getElementById("withdrawAmount").value = "";
-    document.getElementById("withdrawPhone").value = "";
-
   } catch (error) {
-    say("withdrawMessage", "Could not submit request. Check your connection and try again.");
+    say("withdrawMessage", "Connection error. Please try again.");
   } finally {
     button.disabled = false;
   }
 }
 
+async function loadHistory() {
+  if (!db || !currentUser) return;
 
-async function signOut(){
-  if(db)await db.auth.signOut();
-  currentUser=null;
-  document.getElementById("dashboard").classList.add("hidden");
-  document.getElementById("auth").classList.remove("hidden");
-  say("authMessage","You have logged out.");
+  say("historyMessage", "Loading your requests...");
+  say("depositHistory", "Loading...");
+  say("withdrawHistory", "Loading...");
+
+  const depositResult = await db.from("deposit_requests")
+    .select("amount,status,created_at,payment_method")
+    .eq("user_id", currentUser.id)
+    .order("created_at", { ascending: false });
+
+  const withdrawalResult = await db.from("withdrawal_requests")
+    .select("amount,status,created_at,payout_phone,payout_method")
+    .eq("user_id", currentUser.id)
+    .order("created_at", { ascending: false });
+
+  renderHistory("depositHistory", depositResult, "payment_method");
+  renderHistory("withdrawHistory", withdrawalResult, "payout_phone");
+  say("historyMessage", "Only requests belonging to your account are requested.");
 }
 
-if(db){
-  db.auth.getSession().then(({data,error})=>{
-    if(!error&&data.session){
-      currentUser=data.session.user;
-      openDashboard();
+function renderHistory(elementId, result, detailField) {
+  const element = document.getElementById(elementId);
+
+  if (result.error) {
+    element.textContent = "Could not load requests: " + result.error.message;
+    return;
+  }
+
+  const rows = result.data || [];
+  if (!rows.length) {
+    element.textContent = "No requests found.";
+    return;
+  }
+
+  element.innerHTML = rows.map(row => {
+    const date = row.created_at ? new Date(row.created_at).toLocaleString() : "Date unavailable";
+    return '<div class="item"><strong>UGX ' +
+      escapeHTML(Number(row.amount).toLocaleString()) +
+      '</strong><br>Status: ' + escapeHTML(row.status) +
+      '<br>' + escapeHTML(detailField === "payment_method" ? "Method: " + (row[detailField] || "") : "Phone: " + (row[detailField] || "")) +
+      '<br><span class="small">' + escapeHTML(date) + '</span></div>';
+  }).join("");
+}
+
+async function loadAdminRequests() {
+  if (!db || !currentUser || !isAdmin) {
+    say("adminMessage", "Admin access is required.");
+    return;
+  }
+
+  say("adminMessage", "Loading requests...");
+
+  const deposits = await db.from("deposit_requests")
+    .select("id,user_id,amount,status,payment_method,created_at")
+    .order("created_at", { ascending: false });
+
+  const withdrawals = await db.from("withdrawal_requests")
+    .select("id,user_id,amount,status,payout_phone,payout_method,created_at")
+    .order("created_at", { ascending: false });
+
+  renderAdminList("adminDeposits", deposits);
+  renderAdminList("adminWithdrawals", withdrawals);
+
+  if (deposits.error || withdrawals.error) {
+    say("adminMessage", "Some requests could not load. Check the table permissions and policies.");
+  } else {
+    say("adminMessage", "Request lists refreshed.");
+  }
+}
+
+function renderAdminList(elementId, result) {
+  const element = document.getElementById(elementId);
+
+  if (result.error) {
+    element.textContent = "Could not load: " + result.error.message;
+    return;
+  }
+
+  const rows = result.data || [];
+  if (!rows.length) {
+    element.textContent = "No requests found.";
+    return;
+  }
+
+  element.innerHTML = rows.map(row =>
+    '<div class="item"><strong>UGX ' +
+    escapeHTML(Number(row.amount).toLocaleString()) +
+    '</strong><br>Status: ' + escapeHTML(row.status) +
+    '<br>User ID: ' + escapeHTML(row.user_id) +
+    '<br>Method: ' + escapeHTML(row.payment_method || row.payout_method || "") +
+    (row.payout_phone ? '<br>Phone: ' + escapeHTML(row.payout_phone) : '') +
+    '<br><span class="small">' +
+    escapeHTML(row.created_at ? new Date(row.created_at).toLocaleString() : "") +
+    '</span></div>'
+  ).join("");
+}
+
+async function signOut() {
+  if (db) {
+    const { error } = await db.auth.signOut();
+    if (error) {
+      say("message", "Could not log out: " + error.message);
+      return;
+    }
+  }
+
+  currentUser = null;
+  isAdmin = false;
+  document.getElementById("dashboard").classList.add("hidden");
+  document.getElementById("auth").classList.remove("hidden");
+  document.getElementById("menuButton").classList.add("hidden");
+  say("authMessage", "You have logged out.");
+}
+
+if (db) {
+  db.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_OUT") {
+      currentUser = null;
+      isAdmin = false;
+      document.getElementById("dashboard").classList.add("hidden");
+      document.getElementById("auth").classList.remove("hidden");
+      document.getElementById("menuButton").classList.add("hidden");
     }
   });
+
+  db.auth.getSession().then(({ data, error }) => {
+    if (!error && data.session && data.session.user) {
+      currentUser = data.session.user;
+      openDashboard();
+    }
+  }).catch(() => {
+    say("authMessage", "Could not check your login session. Refresh and try again.");
+  });
+} else {
+  say("authMessage", "Supabase did not load. Check your internet connection and refresh.");
 }
 </script>
 </body>
 </html>
-
-  
