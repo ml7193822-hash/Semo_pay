@@ -1,5 +1,6 @@
 
- html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -9,635 +10,380 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#f3f7f4;color:#183b2a;font-family:Arial,sans-serif}
-header{background:#126b3b;color:white;padding:16px;display:flex;justify-content:space-between;align-items:center}
-header h2{margin:0}
-main{max-width:600px;margin:auto;padding:16px}
-.card{background:white;border-radius:14px;padding:18px;margin:14px 0;box-shadow:0 2px 9px #0000000c}
-button{border:0;border-radius:9px;padding:13px 16px;background:#168348;color:white;font-weight:bold;cursor:pointer;margin:3px}
+header{background:#14532d;color:white;padding:18px;text-align:center}
+main{max-width:700px;margin:auto;padding:15px}
+.card{background:white;padding:16px;margin:12px 0;border-radius:12px;box-shadow:0 2px 8px #0001}
+input,select,button{width:100%;padding:12px;margin:7px 0;border:1px solid #ccc;border-radius:7px;font-size:16px}
+button{background:#166534;color:white;border:0;font-weight:bold;cursor:pointer}
+button.secondary{background:#475569}
+button.danger{background:#b91c1c}
 button:disabled{opacity:.5}
-input,select{width:100%;padding:13px;margin:7px 0 12px;border:1px solid #ccd8cf;border-radius:8px;font-size:16px}
+nav{display:flex;flex-wrap:wrap;gap:6px}
+nav button{width:auto;flex:1;min-width:100px}
 .hidden{display:none!important}
-.small{font-size:13px;color:#65766b;line-height:1.5}
-.green{background:#126b3b;color:white}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-.row button{flex:1}
-.item{border-bottom:1px solid #e0e8e2;padding:10px 0;overflow-wrap:anywhere}
+.small{font-size:13px;color:#64748b}
+.payment-number{font-size:25px;font-weight:bold;color:#166534;letter-spacing:1px}
+.item{border:1px solid #ddd;border-radius:8px;padding:12px;margin:10px 0;overflow-wrap:anywhere}
+.good{color:#166534}.bad{color:#b91c1c}
 </style>
 </head>
 <body>
-
 <header>
-  <h2>SEMO PAY</h2>
-  <button id="menuButton" class="hidden" onclick="toggleMenu()">☰ Menu</button>
+<h1>SEMO PAY</h1>
+<p>Welcome to SEMO PAY</p>
 </header>
-
 <main>
-  <section id="auth">
-    <div class="card">
-      <h2>Welcome to SEMO PAY</h2>
-      <p class="small">Create an account or log in.</p>
+<div id="message" class="card hidden"></div>
 
-      <label>Full name (registration only)</label>
-      <input id="fullname" placeholder="Enter full name">
+<section id="authSection" class="card">
+<h2 id="authTitle">Login</h2>
+<label>Full name (for new account)</label>
+<input id="fullName" placeholder="Enter your full name">
+<label>Email address</label>
+<input id="email" type="email" placeholder="Enter email">
+<label>Password</label>
+<input id="password" type="password" placeholder="Enter password">
+<button onclick="login()">Login</button>
+<button class="secondary" onclick="signup()">Create account</button>
+<button class="secondary" onclick="resetPassword()">Forgot password?</button>
+</section>
 
-      <label>Email address</label>
-      <input id="email" type="email" autocomplete="email" placeholder="Enter your email">
-
-      <label>Password</label>
-      <input id="password" type="password" autocomplete="current-password" placeholder="At least 6 characters">
-
-      <div class="row">
-        <button onclick="signUp()">Sign Up</button>
-        <button onclick="signIn()">Login</button>
-      </div>
-
-      <button onclick="resetPassword()">Reset Password</button>
-      <p id="authMessage" class="small" role="status"></p>
-    </div>
-  </section>
-
-  <section id="dashboard" class="hidden">
-    <div id="menu" class="card hidden">
-      <button onclick="showSection('home')">Dashboard</button>
-      <button onclick="showSection('invest')">Investment Calculator</button>
-      <button onclick="showSection('deposit')">Deposit</button>
-      <button onclick="showSection('withdraw')">Withdraw</button>
-      <button onclick="showSection('history')">History</button>
-      <button onclick="window.open('https://chat.whatsapp.com/BZK6rMIgoF8HHormrIzSNz?s=cl&p=a&mlu=4&ilr=4','_blank')">WhatsApp Group</button>
-      <button onclick="signOut()">Log Out</button>
-    </div>
-
-    <div id="home" class="userSection">
-      <div class="card green">
-        <p>YOUR ACCOUNT BALANCE</p>
-        <h1>UGX 0</h1>
-        <p class="small" style="color:white">Your actual balance is not calculated by this page.</p>
-      </div>
-      <div class="card">
-        <h3>Welcome!</h3>
-        <p id="userEmail" class="small"></p>
-        <p>Use the menu to submit requests and view your request history.</p>
-        <p class="small">No deposit or withdrawal is processed automatically by this website.</p>
-      </div>
-    </div>
-
-    <div id="invest" class="userSection hidden">
-      <div class="card">
-        <h2>Investment Calculator</h2>
-        <label>Amount in UGX</label>
-        <input id="investmentAmount" type="number" min="1" placeholder="Enter amount">
-        <button onclick="calculateInvestment()">Calculate example</button>
-        <p id="investmentResult" class="small"></p>
-        <p class="small">Illustration only. Returns are not guaranteed, and this calculator does not process investments.</p>
-      </div>
-    </div>
-
-    <div id="deposit" class="userSection hidden">
-      <div class="card">
-        <h2>Deposit Request</h2>
-        <label>Amount in UGX (minimum 10,000)</label>
-        <input id="depositAmount" type="number" min="10000" placeholder="Enter amount">
-        <label>Payment method</label>
-        <select id="depositMethod">
-          
-<div class="card" style="background:#f3f7f4">
-  <h3>Send Your Deposit</h3>
-  <p id="depositNumber">
-    Select MTN or Airtel to see the payment number.
-  </p>
-  <p class="small">
-    Send only the amount you intend to deposit.
-    Keep your transaction confirmation and submit
-    your deposit request for manual verification.
-  </p>
+<section id="appSection" class="hidden">
+<div class="card">
+<h2 id="welcome">Dashboard</h2>
+<p>Balance: <strong id="balance">UGX 0</strong></p>
+<p>Welcome bonus: <strong id="bonus">UGX 0</strong></p>
+<p id="userEmail" class="small"></p>
+<button class="secondary" onclick="logout()">Log out</button>
 </div>
 
-          <option value="MTN">MTN Mobile Money</option>
-          <option value="AIRTEL">Airtel Money</option>
-        </select>
-        <button id="depositButton" onclick="requestDeposit()">Submit Deposit Request</button>
-        <p id="depositMessage" class="small" role="status"></p>
-      </div>
-    </div>
+<nav>
+<button onclick="showPage('dashboardPage')">Dashboard</button>
+<button onclick="showPage('depositPage')">Deposit</button>
+<button onclick="showPage('withdrawPage')">Withdraw</button>
+<button onclick="showPage('historyPage')">History</button>
+<button id="adminTab" class="hidden" onclick="showPage('adminPage')">Admin</button>
+</nav>
 
-    <div id="withdraw" class="userSection hidden">
-      <div class="card">
-        <h2>Withdrawal Request</h2>
-        <label>Amount in UGX (minimum 2,000)</label>
-        <input id="withdrawAmount" type="number" min="2000" placeholder="Enter amount">
-        <label>Mobile Money number</label>
-        <input id="withdrawPhone" type="tel" placeholder="Enter phone number">
-        <label>Payment method</label>
-        <select id="withdrawMethod">
-          <option value="MTN">MTN Mobile Money</option>
-          <option value="AIRTEL">Airtel Money</option>
-        </select>
-        <button id="withdrawButton" onclick="requestWithdrawal()">Submit Withdrawal Request</button>
-        <p id="withdrawMessage" class="small" role="status"></p>
-      </div>
-    </div>
+<section id="dashboardPage" class="card">
+<h2>My Dashboard</h2>
+<p>Manage your account and submit deposit or withdrawal requests.</p>
+<p class="small">Only deposits actually received should be approved by an administrator.</p>
+</section>
 
-    <div id="history" class="userSection hidden">
-      <div class="card">
-        <h2>My Request History</h2>
-        <button onclick="loadHistory()">Refresh History</button>
-        <h3>Deposits</h3>
-        <div id="depositHistory">Loading...</div>
-        <h3>Withdrawals</h3>
-        <div id="withdrawHistory">Loading...</div>
-        <p id="historyMessage" class="small" role="status"></p>
-      </div>
-    </div>
+<section id="depositPage" class="card hidden">
+<h2>Deposit</h2>
+<p>Minimum deposit: <strong>UGX 10,000</strong></p>
+<label>Payment method</label>
+<select id="depositMethod" onchange="showDepositNumber()">
+<option value="MTN">MTN Mobile Money</option>
+<option value="AIRTEL">Airtel Money</option>
+</select>
 
-    <section id="adminDashboard" class="hidden">
-      <div class="card">
-        <h2>Admin Dashboard</h2>
-        <p>Review submitted deposit and withdrawal requests.</p>
-        <button onclick="loadAdminRequests()">Refresh Requests</button>
-        <p id="adminMessage" class="small" role="status"></p>
-      </div>
-      <div class="card">
-        <h3>Deposit Requests</h3>
-        <div id="adminDeposits">Not loaded yet.</div>
-      </div>
-      <div class="card">
-        <h3>Withdrawal Requests</h3>
-        <div id="adminWithdrawals">Not loaded yet.</div>
-      </div>
-    </section>
+<div class="card" style="background:#f3f7f4">
+<h3>Send Your Deposit</h3>
+<div id="depositNumber">
+<p><strong>MTN Mobile Money</strong></p>
+<p class="payment-number">0707728435</p>
+<p>Registered name: <strong>Bakashaba Ruhanga Asa</strong></p>
+</div>
+<button class="secondary" onclick="copyDepositNumber()">Copy payment number</button>
+</div>
 
-    <p id="message" class="small" role="status"></p>
-  </section>
+<label>Amount (UGX)</label>
+<input id="depositAmount" type="number" min="10000" placeholder="Minimum 10000">
+<label>Your Mobile Money number</label>
+<input id="depositPhone" type="tel" placeholder="Number you paid from">
+<label>Transaction ID (if available)</label>
+<input id="depositTransaction" placeholder="Mobile Money transaction ID">
+<button onclick="submitDeposit()">Submit deposit request</button>
+<p class="small">Submitting a request does not mean payment has been received. Your request will be checked.</p>
+</section>
+
+<section id="withdrawPage" class="card hidden">
+<h2>Withdraw</h2>
+<p>Minimum withdrawal: <strong>UGX 2,000</strong></p>
+<label>Payment method</label>
+<select id="withdrawMethod">
+<option value="MTN">MTN Mobile Money</option>
+<option value="AIRTEL">Airtel Money</option>
+</select>
+<label>Mobile Money number to receive payment</label>
+<input id="withdrawPhone" type="tel" placeholder="e.g. 07XXXXXXXX">
+<label>Account name</label>
+<input id="withdrawName" placeholder="Name registered on Mobile Money">
+<label>Amount (UGX)</label>
+<input id="withdrawAmount" type="number" min="2000" placeholder="Minimum 2000">
+<button onclick="submitWithdrawal()">Submit withdrawal request</button>
+<p class="small">A withdrawal request is not an automatic payment. An administrator must review it and arrange payment separately.</p>
+</section>
+
+<section id="historyPage" class="card hidden">
+<h2>Deposit History</h2>
+<button onclick="loadHistory()">Refresh history</button>
+<div id="depositHistory"></div>
+<h2>Withdrawal History</h2>
+<button onclick="loadHistory()">Refresh history</button>
+<div id="withdrawHistory"></div>
+</section>
+
+<section id="adminPage" class="card hidden">
+<h2>Admin Dashboard</h2>
+<p class="small">Approve deposits only after verifying that the money was received.</p>
+<h3>Deposit Requests</h3>
+<button onclick="loadAdmin()">Refresh requests</button>
+<div id="adminDeposits"></div>
+<h3>Withdrawal Requests</h3>
+<div id="adminWithdrawals"></div>
+</section>
+</section>
 </main>
 
 <script>
 const SUPABASE_URL = "https://npeoonuimebfdogwjdmc.supabase.co";
 const SUPABASE_KEY = "sb_publishable_QeCmdqpcw0QpY9Y4dN0i5w_NfYf0bBR";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let db = null;
 let currentUser = null;
-let isAdmin = false;
+let profile = null;
 
-if (window.supabase) {
-  db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+function message(text, isError=false) {
+  const el = document.getElementById("message");
+  el.textContent = text;
+  el.classList.remove("hidden");
+  el.className = "card " + (isError ? "bad" : "good");
+  window.scrollTo(0,0);
 }
-
-function say(id, message) {
-  const element = document.getElementById(id);
-  if (element) element.textContent = message;
+function money(n) {
+  return "UGX " + Number(n || 0).toLocaleString("en-UG");
 }
-
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, character => ({
-    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
-  })[character]);
+function showPage(id) {
+  ["dashboardPage","depositPage","withdrawPage","historyPage","adminPage"]
+    .forEach(x => document.getElementById(x).classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  if (id === "historyPage") loadHistory();
+  if (id === "adminPage") loadAdmin();
 }
-
-function checkConnection() {
-  if (!db) {
-    say("authMessage", "Connection library did not load. Check your internet and refresh.");
-    return false;
+function showDepositNumber() {
+  const method = document.getElementById("depositMethod").value;
+  const display = document.getElementById("depositNumber");
+  if (method === "AIRTEL") {
+    display.innerHTML = `
+      <p><strong>Airtel Money</strong></p>
+      <p class="payment-number">0791592637</p>
+      <p>Registered name: <strong>Frank Sabiti</strong></p>`;
+  } else {
+    display.innerHTML = `
+      <p><strong>MTN Mobile Money</strong></p>
+      <p class="payment-number">0707728435</p>
+      <p>Registered name: <strong>Bakashaba Ruhanga Asa</strong></p>`;
   }
-  return true;
 }
-
-async function signUp() {
-  if (!checkConnection()) return;
-
-  const name = document.getElementById("fullname").value.trim();
+async function copyDepositNumber() {
+  const num = document.getElementById("depositMethod").value === "AIRTEL"
+    ? "0791592637" : "0707728435";
+  try {
+    await navigator.clipboard.writeText(num);
+    message("Payment number copied: " + num);
+  } catch (e) {
+    message("Payment number: " + num + ". Please copy it manually.");
+  }
+}
+async function signup() {
+  const name = document.getElementById("fullName").value.trim();
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
-
-  if (!name || !email || password.length < 6) {
-    say("authMessage", "Enter your full name, email, and a password of at least 6 characters.");
-    return;
-  }
-
-  say("authMessage", "Creating account...");
-
-  try {
-    const { data, error } = await db.auth.signUp({
-      email,
-      password,
-      options: { data: { full_name: name } }
-    });
-
-    if (error) {
-      say("authMessage", "Sign-up failed: " + error.message);
-      return;
-    }
-
-    if (data.session && data.user) {
-      currentUser = data.user;
-      await openDashboard();
-    } else {
-      say("authMessage", "Account created. Check your email if confirmation is required, then log in.");
-    }
-  } catch (error) {
-    say("authMessage", "Connection error. Refresh the page and try again.");
-  }
-}
-
-async function signIn() {
-  if (!checkConnection()) return;
-
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-
-  if (!email || !password) {
-    say("authMessage", "Enter your email and password.");
-    return;
-  }
-
-  say("authMessage", "Logging in...");
-
-  try {
-    const { data, error } = await db.auth.signInWithPassword({ email, password });
-
-    if (error) {
-      say("authMessage", "Login failed: " + error.message);
-      return;
-    }
-
-    if (!data.user) {
-      say("authMessage", "Login did not return a user. Please try again.");
-      return;
-    }
-
-    currentUser = data.user;
-    await openDashboard();
-  } catch (error) {
-    say("authMessage", "Login error: " + (error.message || "Please refresh and try again."));
-  }
-}
-
-async function resetPassword() {
-  if (!checkConnection()) return;
-
-  const email = document.getElementById("email").value.trim();
-  if (!email) {
-    say("authMessage", "Enter your registered email first.");
-    return;
-  }
-
-  say("authMessage", "Sending password reset email...");
-
-  try {
-    const { error } = await db.auth.resetPasswordForEmail(email, {
-      redirectTo: "https://ml7193822-hash.github.io/Semo_pay/"
-    });
-
-    say("authMessage", error ? error.message : "If the account exists, a reset email will be sent.");
-  } catch (error) {
-    say("authMessage", "Could not send reset email. Please try again.");
-  }
-}
-
-async function openDashboard() {
-  document.getElementById("auth").classList.add("hidden");
-  document.getElementById("dashboard").classList.remove("hidden");
-  document.getElementById("menuButton").classList.remove("hidden");
-
-  say("userEmail", currentUser ? currentUser.email : "");
-  say("message", "You are logged in.");
-
-  isAdmin = false;
-
-  try {
-    const { data, error } = await db
-      .from("profiles")
-      .select("role")
-      .eq("id", currentUser.id)
-      .maybeSingle();
-
-    if (!error && data && data.role === "admin") {
-      isAdmin = true;
-    }
-  } catch (error) {
-    isAdmin = false;
-  }
-
-  document.getElementById("adminDashboard").classList.toggle("hidden", !isAdmin);
-  showSection("home");
-
-  if (isAdmin) await loadAdminRequests();
-}
-
-function showSection(name) {
-  document.querySelectorAll(".userSection").forEach(section => {
-    section.classList.toggle("hidden", section.id !== name);
+  if (!name || !email || !password) return message("Enter your full name, email and password.", true);
+  const { error } = await db.auth.signUp({
+    email, password,
+    options: { data: { full_name: name } }
   });
-  document.getElementById("menu").classList.add("hidden");
-
-  if (name === "history") loadHistory();
+  if (error) return message(error.message, true);
+  message("Account created. If email confirmation is enabled, check your email before logging in.");
 }
-
-function toggleMenu() {
-  document.getElementById("menu").classList.toggle("hidden");
+async function login() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  if (!email || !password) return message("Enter your email and password.", true);
+  const { error } = await db.auth.signInWithPassword({email,password});
+  if (error) return message(error.message, true);
+  await startApp();
 }
-
-function calculateInvestment() {
-  const amount = Number(document.getElementById("investmentAmount").value);
-
-  if (!Number.isFinite(amount) || amount <= 0) {
-    say("investmentResult", "Enter a valid amount.");
+async function resetPassword() {
+  const email = document.getElementById("email").value.trim();
+  if (!email) return message("Enter your email address first.", true);
+  const { error } = await db.auth.resetPasswordForEmail(email);
+  if (error) return message(error.message, true);
+  message("If password reset is configured, check your email for the reset link.");
+}
+async function logout() {
+  await db.auth.signOut();
+  currentUser = null;
+  profile = null;
+  document.getElementById("appSection").classList.add("hidden");
+  document.getElementById("authSection").classList.remove("hidden");
+  message("You have logged out.");
+}
+async function startApp() {
+  const { data: { user } } = await db.auth.getUser();
+  if (!user) return;
+  currentUser = user;
+  document.getElementById("authSection").classList.add("hidden");
+  document.getElementById("appSection").classList.remove("hidden");
+  document.getElementById("userEmail").textContent = user.email || "";
+  await loadProfile();
+  showPage("dashboardPage");
+}
+async function loadProfile() {
+  const { data, error } = await db.from("profiles")
+    .select("id, full_name, balance, welcome_bonus, role")
+    .eq("id", currentUser.id).maybeSingle();
+  if (error) {
+    message("Could not load profile: " + error.message, true);
     return;
   }
-
-  say("investmentResult",
-    "Illustration only: 20% of UGX " + amount.toLocaleString() +
-    " is UGX " + (amount * 0.2).toLocaleString() +
-    ". This is not a guaranteed or actual return.");
-}
-
-async function requestDeposit() {
-  if (!checkConnection()) return;
-  if (!currentUser) {
-    say("depositMessage", "Please log in first.");
+  profile = data;
+  if (!profile) {
+    message("Your profile is missing. Please check the profiles table and signup trigger.", true);
     return;
   }
-
+  document.getElementById("welcome").textContent =
+    "Welcome, " + (profile.full_name || "Member");
+  document.getElementById("balance").textContent = money(profile.balance);
+  document.getElementById("bonus").textContent = money(profile.welcome_bonus);
+  if (profile.role === "admin") {
+    document.getElementById("adminTab").classList.remove("hidden");
+  } else {
+    document.getElementById("adminTab").classList.add("hidden");
+  }
+}
+async function submitDeposit() {
   const amount = Number(document.getElementById("depositAmount").value);
   const method = document.getElementById("depositMethod").value;
-
-  if (!Number.isFinite(amount) || amount < 10000) {
-    say("depositMessage", "Minimum deposit request is UGX 10,000.");
-    return;
-  }
-
-  const button = document.getElementById("depositButton");
-  button.disabled = true;
-  say("depositMessage", "Submitting request...");
-
-  try {
-    const { error } = await db.from("deposit_requests").insert({
-      user_id: currentUser.id,
-      amount,
-      status: "pending",
-      payment_method: method
-    });
-
-    if (error) {
-      say("depositMessage", "Request failed: " + error.message);
-    } else {
-      say("depositMessage", "Request submitted. Status: Pending. This does not confirm payment received.");
-      document.getElementById("depositAmount").value = "";
-    }
-  } catch (error) {
-    say("depositMessage", "Connection error. Please try again.");
-  } finally {
-    button.disabled = false;
-  }
+  const phone = document.getElementById("depositPhone").value.trim();
+  const transaction = document.getElementById("depositTransaction").value.trim();
+  if (!amount || amount < 10000) return message("Minimum deposit is UGX 10,000.", true);
+  if (!phone) return message("Enter the Mobile Money number you paid from.", true);
+  const { error } = await db.from("deposit_requests").insert({
+    user_id: currentUser.id,
+    amount,
+    payment_method: method,
+    phone,
+    transaction_id: transaction || null,
+    status: "pending"
+  });
+  if (error) return message("Could not submit deposit request: " + error.message, true);
+  document.getElementById("depositAmount").value = "";
+  document.getElementById("depositPhone").value = "";
+  document.getElementById("depositTransaction").value = "";
+  message("Deposit request submitted. Please wait for verification.");
 }
-
-async function requestWithdrawal() {
-  if (!checkConnection()) return;
-  if (!currentUser) {
-    say("withdrawMessage", "Please log in first.");
-    return;
-  }
-
+async function submitWithdrawal() {
   const amount = Number(document.getElementById("withdrawAmount").value);
-  const phone = document.getElementById("withdrawPhone").value.trim();
   const method = document.getElementById("withdrawMethod").value;
-
-  if (!Number.isFinite(amount) || amount < 2000) {
-    say("withdrawMessage", "Minimum withdrawal request is UGX 2,000.");
-    return;
-  }
-
-  if (!phone) {
-    say("withdrawMessage", "Enter your Mobile Money number.");
-    return;
-  }
-
-  const button = document.getElementById("withdrawButton");
-  button.disabled = true;
-  say("withdrawMessage", "Submitting request...");
-
-  try {
-    const { error } = await db.from("withdrawal_requests").insert({
-      user_id: currentUser.id,
-      amount,
-      payout_phone: phone,
-      payout_method: method,
-      status: "pending"
-    });
-
-    if (error) {
-      say("withdrawMessage", "Request failed: " + error.message);
-    } else {
-      say("withdrawMessage", "Request submitted. Status: Pending. Payment has not been sent.");
-      document.getElementById("withdrawAmount").value = "";
-      document.getElementById("withdrawPhone").value = "";
-    }
-  } catch (error) {
-    say("withdrawMessage", "Connection error. Please try again.");
-  } finally {
-    button.disabled = false;
-  }
+  const phone = document.getElementById("withdrawPhone").value.trim();
+  const name = document.getElementById("withdrawName").value.trim();
+  if (!amount || amount < 2000) return message("Minimum withdrawal is UGX 2,000.", true);
+  if (!phone || !name) return message("Enter the recipient phone number and registered name.", true);
+  const { error } = await db.from("withdrawal_requests").insert({
+    user_id: currentUser.id,
+    amount,
+    payment_method: method,
+    phone,
+    full_name: name,
+    status: "pending"
+  });
+  if (error) return message("Could not submit withdrawal request: " + error.message, true);
+  document.getElementById("withdrawAmount").value = "";
+  document.getElementById("withdrawPhone").value = "";
+  document.getElementById("withdrawName").value = "";
+  message("Withdrawal request submitted. Wait for admin review.");
 }
-
+function safeText(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
 async function loadHistory() {
-  if (!db || !currentUser) return;
-
-  say("historyMessage", "Loading your requests...");
-  say("depositHistory", "Loading...");
-  say("withdrawHistory", "Loading...");
-
-  const depositResult = await db.from("deposit_requests")
-    .select("amount,status,created_at,payment_method")
-    .eq("user_id", currentUser.id)
-    .order("created_at", { ascending: false });
-
-  const withdrawalResult = await db.from("withdrawal_requests")
-    .select("amount,status,created_at,payout_phone,payout_method")
-    .eq("user_id", currentUser.id)
-    .order("created_at", { ascending: false });
-
-  renderHistory("depositHistory", depositResult, "payment_method");
-  renderHistory("withdrawHistory", withdrawalResult, "payout_phone");
-  say("historyMessage", "Only requests belonging to your account are requested.");
+  if (!currentUser) return;
+  const d = await db.from("deposit_requests")
+    .select("*").eq("user_id", currentUser.id).order("created_at",{ascending:false});
+  const w = await db.from("withdrawal_requests")
+    .select("*").eq("user_id", currentUser.id).order("created_at",{ascending:false});
+  document.getElementById("depositHistory").innerHTML = d.error
+    ? '<p class="bad">Could not load deposits: '+safeText(d.error.message)+'</p>'
+    : renderItems(d.data || []);
+  document.getElementById("withdrawHistory").innerHTML = w.error
+    ? '<p class="bad">Could not load withdrawals: '+safeText(w.error.message)+'</p>'
+    : renderItems(w.data || []);
 }
-
-function renderHistory(elementId, result, detailField) {
-  const element = document.getElementById(elementId);
-
-  if (result.error) {
-    element.textContent = "Could not load requests: " + result.error.message;
-    return;
-  }
-
-  const rows = result.data || [];
-  if (!rows.length) {
-    element.textContent = "No requests found.";
-    return;
-  }
-
-  element.innerHTML = rows.map(row => {
-    const date = row.created_at ? new Date(row.created_at).toLocaleString() : "Date unavailable";
-    return '<div class="item"><strong>UGX ' +
-      escapeHTML(Number(row.amount).toLocaleString()) +
-      '</strong><br>Status: ' + escapeHTML(row.status) +
-      '<br>' + escapeHTML(detailField === "payment_method" ? "Method: " + (row[detailField] || "") : "Phone: " + (row[detailField] || "")) +
-      '<br><span class="small">' + escapeHTML(date) + '</span></div>';
-  }).join("");
+function renderItems(rows) {
+  if (!rows.length) return "<p>No requests yet.</p>";
+  return rows.map(r => `<div class="item">
+    <strong>${money(r.amount)}</strong><br>
+    Method: ${safeText(r.payment_method || "—")}<br>
+    Status: <strong>${safeText(r.status || "pending")}</strong><br>
+    Date: ${safeText(r.created_at || "—")}
+  </div>`).join("");
 }
-
-async function loadAdminRequests() {
-  if (!db || !currentUser || !isAdmin) {
-    say("adminMessage", "Admin access is required.");
+async function loadAdmin() {
+  if (!currentUser || !profile || profile.role !== "admin") {
+    message("Admin access required.", true);
     return;
   }
-
-  say("adminMessage", "Loading requests...");
-
-  const deposits = await db.from("deposit_requests")
-    .select("id,user_id,amount,status,payment_method,created_at")
-    .order("created_at", { ascending: false });
-
-  const withdrawals = await db.from("withdrawal_requests")
-    .select("id,user_id,amount,status,payout_phone,payout_method,created_at")
-    .order("created_at", { ascending: false });
-
-  renderAdminList("adminDeposits", deposits);
-  renderAdminList("adminWithdrawals", withdrawals);
-
-  if (deposits.error || withdrawals.error) {
-    say("adminMessage", "Some requests could not load. Check the table permissions and policies.");
+  const d = await db.from("deposit_requests")
+    .select("*").order("created_at",{ascending:false});
+  const w = await db.from("withdrawal_requests")
+    .select("*").order("created_at",{ascending:false});
+  document.getElementById("adminDeposits").innerHTML = d.error
+    ? '<p class="bad">Could not load deposits. Check table permissions: '+safeText(d.error.message)+'</p>'
+    : renderAdminRows(d.data || [], "deposit");
+  document.getElementById("adminWithdrawals").innerHTML = w.error
+    ? '<p class="bad">Could not load withdrawals. Check table permissions: '+safeText(w.error.message)+'</p>'
+    : renderAdminRows(w.data || [], "withdrawal");
+}
+function renderAdminRows(rows, type) {
+  if (!rows.length) return "<p>No requests found.</p>";
+  return rows.map(r => `<div class="item">
+    <strong>${type === "deposit" ? "Deposit" : "Withdrawal"}: ${money(r.amount)}</strong><br>
+    User ID: ${safeText(r.user_id)}<br>
+    Method: ${safeText(r.payment_method || "—")}<br>
+    Phone: ${safeText(r.phone || "—")}<br>
+    Transaction ID: ${safeText(r.transaction_id || "—")}<br>
+    Status: <strong>${safeText(r.status || "pending")}</strong><br>
+    Date: ${safeText(r.created_at || "—")}
+    ${r.status === "pending" ? `
+      <button onclick="adminDecision('${type}','${r.id}','approved')">Approve</button>
+      <button class="danger" onclick="adminDecision('${type}','${r.id}','rejected')">Reject</button>
+    ` : ""}
+  </div>`).join("");
+}
+async function adminDecision(type, id, decision) {
+  if (!profile || profile.role !== "admin") return message("Admin access required.", true);
+  if (decision === "approved" && type === "deposit") {
+    if (!confirm("Only continue if you have verified that this deposit was actually received. Approve this deposit?")) return;
+    const { error } = await db.rpc("admin_approve_deposit", {p_request_id:id});
+    if (error) return message("Deposit approval failed: " + error.message, true);
+    message("Deposit approved.");
   } else {
-    say("adminMessage", "Request lists refreshed.");
+    if (!confirm("Are you sure you want to " + decision + " this request?")) return;
+    const table = type === "deposit" ? "deposit_requests" : "withdrawal_requests";
+    const { error } = await db.from(table).update({status:decision}).eq("id",id);
+    if (error) return message("Could not update request: " + error.message, true);
+    message("Request " + decision + ".");
   }
+  await loadAdmin();
+  await loadProfile();
 }
-
-
-async function adminDecision(requestId, decision, tableName) {
-  if (!db || !currentUser || !isAdmin) {
-    alert("Admin access required.");
-    return;
+db.auth.onAuthStateChange((event, session) => {
+  if (session && !currentUser) {
+    setTimeout(() => startApp(), 0);
   }
-
-  if (!["approved", "rejected"].includes(decision)) return;
-
-  const confirmed = confirm(
-    "Are you sure you want to mark this request as " + decision + "?"
-  );
-
-  if (!confirmed) return;
-
-  const { data, error } = await db
-    .from(tableName)
-    .update({ status: decision })
-    .eq("id", requestId)
-    .eq("status", "pending")
-    .select("id");
-
-  if (error) {
-    alert("Update failed: " + error.message +
-      ". An admin database permission may be missing.");
-    return;
-  }
-
-  if (!data || data.length === 0) {
-    alert("No request updated. It may no longer be pending, or database permissions may be missing.");
-    return;
-  }
-
-  alert("Request marked " + decision + ".");
-  await loadAdminRequests();
-}
-
-function renderAdminList(elementId, result) {
-  const element = document.getElementById(elementId);
-
-  if (result.error) {
-    element.textContent = "Could not load: " + result.error.message;
-    return;
-  }
-
-  const rows = result.data || [];
-
-  if (!rows.length) {
-    element.textContent = "No requests found.";
-    return;
-  }
-
-  const tableName = elementId === "adminWithdrawals"
-    ? "withdrawal_requests"
-    : "deposit_requests";
-
-  element.innerHTML = rows.map(row => {
-    const pending = row.status === "pending";
-
-    return '<div class="item">' +
-      '<strong>UGX ' +
-      escapeHTML(Number(row.amount).toLocaleString()) +
-      '</strong><br>Status: ' + escapeHTML(row.status) +
-      '<br>User ID: ' + escapeHTML(row.user_id) +
-      '<br>Method: ' +
-      escapeHTML(row.payment_method || row.payout_method || "") +
-      (row.payout_phone
-        ? '<br>Phone: ' + escapeHTML(row.payout_phone)
-        : '') +
-      '<br><span class="small">' +
-      escapeHTML(row.created_at
-        ? new Date(row.created_at).toLocaleString()
-        : "") +
-      '</span>' +
-      (pending
-        ? '<div class="row">' +
-          '<button onclick="adminDecision(\'' +
-          escapeHTML(row.id) + '\',\'approved\',\'' +
-          tableName + '\')">Approve</button>' +
-          '<button style="background:#b42318" onclick="adminDecision(\'' +
-          escapeHTML(row.id) + '\',\'rejected\',\'' +
-          tableName + '\')">Reject</button>' +
-          '</div>'
-        : '') +
-      '</div>';
-  }).join("");
-}
-
-
-async function signOut() {
-  if (db) {
-    const { error } = await db.auth.signOut();
-    if (error) {
-      say("message", "Could not log out: " + error.message);
-      return;
-    }
-  }
-
-  currentUser = null;
-  isAdmin = false;
-  document.getElementById("dashboard").classList.add("hidden");
-  document.getElementById("auth").classList.remove("hidden");
-  document.getElementById("menuButton").classList.add("hidden");
-  say("authMessage", "You have logged out.");
-}
-
-if (db) {
-  db.auth.onAuthStateChange((event, session) => {
-    if (event === "SIGNED_OUT") {
-      currentUser = null;
-      isAdmin = false;
-      document.getElementById("dashboard").classList.add("hidden");
-      document.getElementById("auth").classList.remove("hidden");
-      document.getElementById("menuButton").classList.add("hidden");
-    }
-  });
-
-  db.auth.getSession().then(({ data, error }) => {
-    if (!error && data.session && data.session.user) {
-      currentUser = data.session.user;
-      openDashboard();
-    }
-  }).catch(() => {
-    say("authMessage", "Could not check your login session. Refresh and try again.");
-  });
-} else {
-  say("authMessage", "Supabase did not load. Check your internet connection and refresh.");
-}
+});
+(async function init() {
+  const { data: { session } } = await db.auth.getSession();
+  if (session) await startApp();
+})();
 </script>
 </body>
 </html>
