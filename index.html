@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,7 +32,7 @@ nav button{width:auto;flex:1;min-width:100px}
 <p>Welcome to SEMO PAY</p>
 </header>
 <main>
-<div id="message" class="card hidden"></div>
+<div id="message" class="card hidden" role="status"></div>
 
 <section id="authSection" class="card">
 <h2 id="authTitle">Login</h2>
@@ -57,18 +56,16 @@ nav button{width:auto;flex:1;min-width:100px}
 <button class="secondary" onclick="logout()">Log out</button>
 </div>
 
-
 <nav>
 <button onclick="showPage('dashboardPage')">Dashboard</button>
 <button onclick="showPage('depositPage')">Deposit</button>
 <button onclick="showPage('withdrawPage')">Withdraw</button>
 <button onclick="showPage('historyPage')">History</button>
 <button onclick="showPage('investPage')">Invest</button>
-<button onclick="window.open('https://chat.whatsapp.com/BZK6rMIgoF8HHormrIzSNz?s=cl&p=a&mlu=4&ilr=4','_blank')">WhatsApp Group</button>
-<button onclick="window.open('https://wa.me/256783865497','_blank')">Customer Support</button>
+<button onclick="window.open('https://chat.whatsapp.com/BZK6rMIgoF8HHormrIzSNz?s=cl&p=a&mlu=4&ilr=4','_blank','noopener')">WhatsApp Group</button>
+<button onclick="window.open('https://wa.me/256783865497','_blank','noopener')">Customer Support</button>
 <button id="adminTab" class="hidden" onclick="showPage('adminPage')">Admin</button>
 </nav>
-
 
 <section id="dashboardPage" class="card">
 <h2>My Dashboard</h2>
@@ -84,32 +81,6 @@ nav button{width:auto;flex:1;min-width:100px}
 <option value="MTN">MTN Mobile Money</option>
 <option value="AIRTEL">Airtel Money</option>
 </select>
-  
-<section id="dashboardPage" class="card">
-<h2>My Dashboard</h2>
-<p>Manage your account and submit deposit or withdrawal requests.</p>
-<p class="small">Only deposits actually received should be approved by an administrator.</p>
-</section>
-
-<section id="investPage" class="card hidden">
-  <h2>Invest</h2>
-  <p>Welcome to the SEMO PAY investment page.</p>
-  <p>Available balance: <strong id="investBalance">UGX 0</strong></p>
-
-  <label>Investment amount (UGX)</label>
-  <input id="investAmount" type="number" min="10000"
-         placeholder="Minimum 10000">
-
-  <button onclick="investmentNotReady()">
-    Investment options
-  </button>
-
-  <p class="small">
-    Investment submissions are not yet connected to the database.
-    No money will be deducted.
-  </p>
-</section>
-
 
 <div class="card" style="background:#f3f7f4">
 <h3>Send Your Deposit</h3>
@@ -154,8 +125,18 @@ nav button{width:auto;flex:1;min-width:100px}
 <button onclick="loadHistory()">Refresh history</button>
 <div id="depositHistory"></div>
 <h2>Withdrawal History</h2>
-<button onclick="loadHistory()">Refresh history</button>
 <div id="withdrawHistory"></div>
+</section>
+
+<section id="investPage" class="card hidden">
+<h2>Invest</h2>
+<p>Welcome to the SEMO PAY investment page.</p>
+<p>Available balance: <strong id="investBalance">UGX 0</strong></p>
+<label>Investment amount (UGX)</label>
+<input id="investAmount" type="number" min="10000" step="1000" placeholder="Minimum 10000">
+<button onclick="investmentOptions()">Investment options</button>
+<div id="investmentInfo" class="item hidden"></div>
+<p class="small">Investment requests are not connected to the database yet. This page will not deduct money or promise returns.</p>
 </section>
 
 <section id="adminPage" class="card hidden">
@@ -181,45 +162,76 @@ let profile = null;
 function message(text, isError=false) {
   const el = document.getElementById("message");
   el.textContent = text;
-  el.classList.remove("hidden");
   el.className = "card " + (isError ? "bad" : "good");
-  window.scrollTo(0,0);
 }
+
 function money(n) {
   return "UGX " + Number(n || 0).toLocaleString("en-UG");
 }
 
 function showPage(id) {
   const pages = [
-    "dashboardPage",
-    "depositPage",
-    "withdrawPage",
-    "historyPage",
-    "investPage",
-    "adminPage"
+    "dashboardPage","depositPage","withdrawPage",
+    "historyPage","investPage","adminPage"
   ];
 
-  pages.forEach(function(page) {
-    const el = document.getElementById(page);
-    if (el) el.classList.add("hidden");
-  });
-
   const selected = document.getElementById(id);
-
-  if (!selected) {
-    message("The Invest page has not been created yet.", true);
+  if (!selected || !pages.includes(id)) {
+    message("Page not found. Please check the page ID.", true);
     return;
   }
 
-  selected.classList.remove("hidden");
+  if (id === "adminPage" && (!profile || profile.role !== "admin")) {
+    message("Admin access required.", true);
+    return;
+  }
 
+  pages.forEach(function(page) {
+    document.getElementById(page).classList.add("hidden");
+  });
+
+  selected.classList.remove("hidden");
+  document.getElementById("message").classList.add("hidden");
+
+  if (id === "investPage") {
+    document.getElementById("investBalance").textContent =
+      money(profile ? profile.balance : 0);
+    document.getElementById("investmentInfo").classList.add("hidden");
+  }
   if (id === "historyPage") loadHistory();
   if (id === "adminPage") loadAdmin();
+}
+
+function investmentOptions() {
+  const amount = Number(document.getElementById("investAmount").value);
+  const info = document.getElementById("investmentInfo");
+
+  info.classList.remove("hidden");
+
+  if (!amount || amount < 10000) {
+    info.textContent = "Enter an amount of at least UGX 10,000.";
+    return;
+  }
+
+  if (!Number.isFinite(amount) || !Number.isSafeInteger(amount)) {
+    info.textContent = "Enter a valid whole-number amount.";
+    return;
+  }
+
+  if (!profile || amount > Number(profile.balance || 0)) {
+    info.textContent = "The amount is greater than your displayed available balance.";
+    return;
+  }
+
+  info.textContent =
+    "Your amount is UGX " + amount.toLocaleString("en-UG") +
+    ". Investment submission is not active yet. No money has been deducted.";
 }
 
 function showDepositNumber() {
   const method = document.getElementById("depositMethod").value;
   const display = document.getElementById("depositNumber");
+
   if (method === "AIRTEL") {
     display.innerHTML = `
       <p><strong>Airtel Money</strong></p>
@@ -232,6 +244,7 @@ function showDepositNumber() {
       <p>Registered name: <strong>Bakashaba Ruhanga Asa</strong></p>`;
   }
 }
+
 async function copyDepositNumber() {
   const num = document.getElementById("depositMethod").value === "AIRTEL"
     ? "0791592637" : "0707728435";
@@ -242,136 +255,175 @@ async function copyDepositNumber() {
     message("Payment number: " + num + ". Please copy it manually.");
   }
 }
+
 async function signup() {
   const name = document.getElementById("fullName").value.trim();
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
-  if (!name || !email || !password) return message("Enter your full name, email and password.", true);
+
+  if (!name || !email || !password)
+    return message("Enter your full name, email and password.", true);
+
   const { error } = await db.auth.signUp({
     email, password,
     options: { data: { full_name: name } }
   });
+
   if (error) return message(error.message, true);
   message("Account created. If email confirmation is enabled, check your email before logging in.");
 }
+
 async function login() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
-  if (!email || !password) return message("Enter your email and password.", true);
+
+  if (!email || !password)
+    return message("Enter your email and password.", true);
+
   const { error } = await db.auth.signInWithPassword({email,password});
   if (error) return message(error.message, true);
+
   await startApp();
 }
+
 async function resetPassword() {
   const email = document.getElementById("email").value.trim();
   if (!email) return message("Enter your email address first.", true);
+
   const { error } = await db.auth.resetPasswordForEmail(email);
   if (error) return message(error.message, true);
+
   message("If password reset is configured, check your email for the reset link.");
 }
+
 async function logout() {
   await db.auth.signOut();
   currentUser = null;
   profile = null;
   document.getElementById("appSection").classList.add("hidden");
   document.getElementById("authSection").classList.remove("hidden");
+  document.getElementById("adminTab").classList.add("hidden");
   message("You have logged out.");
 }
+
 async function startApp() {
-  const { data: { user } } = await db.auth.getUser();
+  const { data: { user }, error } = await db.auth.getUser();
+  if (error) return message(error.message, true);
   if (!user) return;
+
   currentUser = user;
   document.getElementById("authSection").classList.add("hidden");
   document.getElementById("appSection").classList.remove("hidden");
   document.getElementById("userEmail").textContent = user.email || "";
+
   await loadProfile();
-  showPage("dashboardPage");
+  if (profile) showPage("dashboardPage");
 }
+
 async function loadProfile() {
   const { data, error } = await db.from("profiles")
     .select("id, full_name, balance, welcome_bonus, role")
     .eq("id", currentUser.id).maybeSingle();
+
   if (error) {
     message("Could not load profile: " + error.message, true);
     return;
   }
+
   profile = data;
+
   if (!profile) {
     message("Your profile is missing. Please check the profiles table and signup trigger.", true);
     return;
   }
+
   document.getElementById("welcome").textContent =
     "Welcome, " + (profile.full_name || "Member");
   document.getElementById("balance").textContent = money(profile.balance);
   document.getElementById("bonus").textContent = money(profile.welcome_bonus);
-  if (profile.role === "admin") {
-    document.getElementById("adminTab").classList.remove("hidden");
-  } else {
-    document.getElementById("adminTab").classList.add("hidden");
-  }
+  document.getElementById("investBalance").textContent = money(profile.balance);
+  document.getElementById("adminTab").classList.toggle(
+    "hidden", profile.role !== "admin"
+  );
 }
+
 async function submitDeposit() {
+  if (!currentUser) return message("Please log in first.", true);
+
   const amount = Number(document.getElementById("depositAmount").value);
   const method = document.getElementById("depositMethod").value;
   const phone = document.getElementById("depositPhone").value.trim();
   const transaction = document.getElementById("depositTransaction").value.trim();
-  if (!amount || amount < 10000) return message("Minimum deposit is UGX 10,000.", true);
+
+  if (!Number.isSafeInteger(amount) || amount < 10000)
+    return message("Minimum deposit is UGX 10,000.", true);
   if (!phone) return message("Enter the Mobile Money number you paid from.", true);
+
   const { error } = await db.from("deposit_requests").insert({
-    user_id: currentUser.id,
-    amount,
-    payment_method: method,
-    phone,
-    transaction_id: transaction || null,
-    status: "pending"
+    user_id: currentUser.id, amount, payment_method: method,
+    phone, transaction_id: transaction || null, status: "pending"
   });
+
   if (error) return message("Could not submit deposit request: " + error.message, true);
+
   document.getElementById("depositAmount").value = "";
   document.getElementById("depositPhone").value = "";
   document.getElementById("depositTransaction").value = "";
   message("Deposit request submitted. Please wait for verification.");
 }
+
 async function submitWithdrawal() {
+  if (!currentUser) return message("Please log in first.", true);
+
   const amount = Number(document.getElementById("withdrawAmount").value);
   const method = document.getElementById("withdrawMethod").value;
   const phone = document.getElementById("withdrawPhone").value.trim();
   const name = document.getElementById("withdrawName").value.trim();
-  if (!amount || amount < 2000) return message("Minimum withdrawal is UGX 2,000.", true);
-  if (!phone || !name) return message("Enter the recipient phone number and registered name.", true);
+
+  if (!Number.isSafeInteger(amount) || amount < 2000)
+    return message("Minimum withdrawal is UGX 2,000.", true);
+  if (!phone || !name)
+    return message("Enter the recipient phone number and registered name.", true);
+
   const { error } = await db.from("withdrawal_requests").insert({
-    user_id: currentUser.id,
-    amount,
-    payment_method: method,
-    phone,
-    full_name: name,
-    status: "pending"
+    user_id: currentUser.id, amount, payment_method: method,
+    phone, full_name: name, status: "pending"
   });
+
   if (error) return message("Could not submit withdrawal request: " + error.message, true);
+
   document.getElementById("withdrawAmount").value = "";
   document.getElementById("withdrawPhone").value = "";
   document.getElementById("withdrawName").value = "";
   message("Withdrawal request submitted. Wait for admin review.");
 }
+
 function safeText(value) {
   return String(value ?? "").replace(/[&<>"']/g, c => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
   }[c]));
 }
+
 async function loadHistory() {
   if (!currentUser) return;
-  const d = await db.from("deposit_requests")
-    .select("*").eq("user_id", currentUser.id).order("created_at",{ascending:false});
-  const w = await db.from("withdrawal_requests")
-    .select("*").eq("user_id", currentUser.id).order("created_at",{ascending:false});
+
+  const d = await db.from("deposit_requests").select("*")
+    .eq("user_id", currentUser.id).order("created_at",{ascending:false});
+  const w = await db.from("withdrawal_requests").select("*")
+    .eq("user_id", currentUser.id).order("created_at",{ascending:false});
+
   document.getElementById("depositHistory").innerHTML = d.error
     ? '<p class="bad">Could not load deposits: '+safeText(d.error.message)+'</p>'
     : renderItems(d.data || []);
+
   document.getElementById("withdrawHistory").innerHTML = w.error
     ? '<p class="bad">Could not load withdrawals: '+safeText(w.error.message)+'</p>'
     : renderItems(w.data || []);
 }
+
 function renderItems(rows) {
   if (!rows.length) return "<p>No requests yet.</p>";
+
   return rows.map(r => `<div class="item">
     <strong>${money(r.amount)}</strong><br>
     Method: ${safeText(r.payment_method || "—")}<br>
@@ -379,24 +431,28 @@ function renderItems(rows) {
     Date: ${safeText(r.created_at || "—")}
   </div>`).join("");
 }
+
 async function loadAdmin() {
-  if (!currentUser || !profile || profile.role !== "admin") {
-    message("Admin access required.", true);
-    return;
-  }
+  if (!currentUser || !profile || profile.role !== "admin")
+    return message("Admin access required.", true);
+
   const d = await db.from("deposit_requests")
     .select("*").order("created_at",{ascending:false});
   const w = await db.from("withdrawal_requests")
     .select("*").order("created_at",{ascending:false});
+
   document.getElementById("adminDeposits").innerHTML = d.error
-    ? '<p class="bad">Could not load deposits. Check table permissions: '+safeText(d.error.message)+'</p>'
+    ? '<p class="bad">Could not load deposits: '+safeText(d.error.message)+'</p>'
     : renderAdminRows(d.data || [], "deposit");
+
   document.getElementById("adminWithdrawals").innerHTML = w.error
-    ? '<p class="bad">Could not load withdrawals. Check table permissions: '+safeText(w.error.message)+'</p>'
+    ? '<p class="bad">Could not load withdrawals: '+safeText(w.error.message)+'</p>'
     : renderAdminRows(w.data || [], "withdrawal");
 }
+
 function renderAdminRows(rows, type) {
   if (!rows.length) return "<p>No requests found.</p>";
+
   return rows.map(r => `<div class="item">
     <strong>${type === "deposit" ? "Deposit" : "Withdrawal"}: ${money(r.amount)}</strong><br>
     User ID: ${safeText(r.user_id)}<br>
@@ -413,55 +469,32 @@ function renderAdminRows(rows, type) {
 }
 
 async function adminDecision(type, id, decision) {
-  if (!profile || profile.role !== "admin") {
+  if (!profile || profile.role !== "admin")
     return message("Admin access required.", true);
-  }
 
-  if (!confirm("Are you sure you want to " + decision + " this request?")) {
+  if (!confirm("Are you sure you want to " + decision + " this request?"))
     return;
-  }
 
   if (type === "withdrawal" && decision === "approved") {
     const { data, error } = await db.rpc(
-      "admin_approve_withdrawal",
-      { p_request_id: id }
+      "admin_approve_withdrawal", { p_request_id: id }
     );
-
-    if (error) {
-      return message("Withdrawal approval failed: " + error.message, true);
-    }
-
-    message(data || "Withdrawal approved. Balance deducted.");
+    if (error) return message("Withdrawal approval failed: " + error.message, true);
+    message(data || "Withdrawal approved. Check the database result.");
   } else if (type === "deposit" && decision === "approved") {
-    if (!confirm("Have you confirmed that the deposit was received?")) {
-      return;
-    }
+    if (!confirm("Have you confirmed that the deposit was received?")) return;
 
     const { error } = await db.rpc(
-      "admin_approve_deposit",
-      { p_request_id: id }
+      "admin_approve_deposit", { p_request_id: id }
     );
-
-    if (error) {
-      return message("Deposit approval failed: " + error.message, true);
-    }
-
+    if (error) return message("Deposit approval failed: " + error.message, true);
     message("Deposit approved.");
   } else {
-    const table = type === "deposit"
-      ? "deposit_requests"
-      : "withdrawal_requests";
+    const table = type === "deposit" ? "deposit_requests" : "withdrawal_requests";
+    const { error } = await db.from(table).update({status:"rejected"})
+      .eq("id", id).eq("status", "pending");
 
-    const { error } = await db
-      .from(table)
-      .update({ status: "rejected" })
-      .eq("id", id)
-      .eq("status", "pending");
-
-    if (error) {
-      return message("Could not reject request: " + error.message, true);
-    }
-
+    if (error) return message("Could not reject request: " + error.message, true);
     message("Request rejected.");
   }
 
@@ -473,8 +506,12 @@ async function adminDecision(type, id, decision) {
 db.auth.onAuthStateChange((event, session) => {
   if (session && !currentUser) {
     setTimeout(() => startApp(), 0);
+  } else if (event === "SIGNED_OUT") {
+    currentUser = null;
+    profile = null;
   }
 });
+
 (async function init() {
   const { data: { session } } = await db.auth.getSession();
   if (session) await startApp();
