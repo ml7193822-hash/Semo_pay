@@ -84,6 +84,32 @@ nav button{width:auto;flex:1;min-width:100px}
 <option value="MTN">MTN Mobile Money</option>
 <option value="AIRTEL">Airtel Money</option>
 </select>
+  
+<section id="dashboardPage" class="card">
+<h2>My Dashboard</h2>
+<p>Manage your account and submit deposit or withdrawal requests.</p>
+<p class="small">Only deposits actually received should be approved by an administrator.</p>
+</section>
+
+<section id="investPage" class="card hidden">
+  <h2>Invest</h2>
+  <p>Welcome to the SEMO PAY investment page.</p>
+  <p>Available balance: <strong id="investBalance">UGX 0</strong></p>
+
+  <label>Investment amount (UGX)</label>
+  <input id="investAmount" type="number" min="10000"
+         placeholder="Minimum 10000">
+
+  <button onclick="investmentNotReady()">
+    Investment options
+  </button>
+
+  <p class="small">
+    Investment submissions are not yet connected to the database.
+    No money will be deducted.
+  </p>
+</section>
+
 
 <div class="card" style="background:#f3f7f4">
 <h3>Send Your Deposit</h3>
