@@ -58,6 +58,36 @@ main{max-width:520px;margin:auto;padding:16px}
 
 <!-- Phone password recovery will be added later -->
 <p id="authMessage" class="small"></p>
+
+
+</div>
+
+<div id="adminDashboard" class="hidden">
+  <div class="card">
+    <h2>SEMO PAY Admin Dashboard</h2>
+    <p>Review deposit and withdrawal requests.</p>
+    <button onclick="loadAdminRequests()">Refresh Requests</button>
+  </div>
+
+  <div class="card">
+    <h3>Deposit Requests</h3>
+    <div id="adminDeposits">No requests loaded yet.</div>
+  </div>
+
+  <div class="card">
+    <h3>Withdrawal Requests</h3>
+    <div id="adminWithdrawals">No requests loaded yet.</div>
+  </div>
+
+  <p id="adminMessage" class="small"></p>
+</div>
+
+<p id="message" class="small"></p>
+</section>
+</main>
+
+<script>
+
 </div>
 </section>
 
