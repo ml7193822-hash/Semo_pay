@@ -358,23 +358,65 @@ function renderAdminRows(rows, type) {
     ` : ""}
   </div>`).join("");
 }
+
 async function adminDecision(type, id, decision) {
-  if (!profile || profile.role !== "admin") return message("Admin access required.", true);
-  if (decision === "approved" && type === "deposit") {
-    if (!confirm("Only continue if you have verified that this deposit was actually received. Approve this deposit?")) return;
-    const { error } = await db.rpc("admin_approve_deposit", {p_request_id:id});
-    if (error) return message("Deposit approval failed: " + error.message, true);
+  if (!profile || profile.role !== "admin") {
+    return message("Admin access required.", true);
+  }
+
+  if (!confirm("Are you sure you want to " + decision + " this request?")) {
+    return;
+  }
+
+  if (type === "withdrawal" && decision === "approved") {
+    const { data, error } = await db.rpc(
+      "admin_approve_withdrawal",
+      { p_request_id: id }
+    );
+
+    if (error) {
+      return message("Withdrawal approval failed: " + error.message, true);
+    }
+
+    message(data || "Withdrawal approved. Balance deducted.");
+  } else if (type === "deposit" && decision === "approved") {
+    if (!confirm("Have you confirmed that the deposit was received?")) {
+      return;
+    }
+
+    const { error } = await db.rpc(
+      "admin_approve_deposit",
+      { p_request_id: id }
+    );
+
+    if (error) {
+      return message("Deposit approval failed: " + error.message, true);
+    }
+
     message("Deposit approved.");
   } else {
-    if (!confirm("Are you sure you want to " + decision + " this request?")) return;
-    const table = type === "deposit" ? "deposit_requests" : "withdrawal_requests";
-    const { error } = await db.from(table).update({status:decision}).eq("id",id);
-    if (error) return message("Could not update request: " + error.message, true);
-    message("Request " + decision + ".");
+    const table = type === "deposit"
+      ? "deposit_requests"
+      : "withdrawal_requests";
+
+    const { error } = await db
+      .from(table)
+      .update({ status: "rejected" })
+      .eq("id", id)
+      .eq("status", "pending");
+
+    if (error) {
+      return message("Could not reject request: " + error.message, true);
+    }
+
+    message("Request rejected.");
   }
+
   await loadAdmin();
   await loadProfile();
+  await loadHistory();
 }
+
 db.auth.onAuthStateChange((event, session) => {
   if (session && !currentUser) {
     setTimeout(() => startApp(), 0);
