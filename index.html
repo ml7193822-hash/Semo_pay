@@ -230,27 +230,48 @@ function showPage(id) {
 
 
 
+
+let investmentSubmitting = false;
+
 async function investmentOptions() {
+  if (investmentSubmitting) return;
+
+  const button = document.querySelector(
+    '#investPage button[onclick="investmentOptions()"]'
+  );
   const amount = Number(document.getElementById("investAmount").value);
   const info = document.getElementById("investmentInfo");
 
-  info.classList.remove("hidden");
-  info.textContent = "Checking your investment...";
-
   if (!Number.isSafeInteger(amount) || amount < 10000) {
-    info.textContent = "Choose an investment of at least UGX 10,000.";
+    info.classList.remove("hidden");
+    info.textContent = "Choose a valid investment amount.";
     return;
   }
 
   if (!currentUser || !profile) {
+    info.classList.remove("hidden");
     info.textContent = "Please log in again before investing.";
     return;
   }
 
   if (amount > Number(profile.balance || 0)) {
+    info.classList.remove("hidden");
     info.textContent = "Your balance is too low for this amount.";
     return;
   }
+
+  if (!confirm(
+    "Submit an investment of UGX " +
+    amount.toLocaleString("en-UG") +
+    "? The amount will be deducted from your balance when submitted."
+  )) {
+    return;
+  }
+
+  investmentSubmitting = true;
+  if (button) button.disabled = true;
+  info.classList.remove("hidden");
+  info.textContent = "Submitting investment request...";
 
   try {
     const { data, error } = await db.rpc("submit_investment", {
@@ -262,19 +283,21 @@ async function investmentOptions() {
       return;
     }
 
-    info.textContent = data || "Investment submitted successfully.";
+    info.textContent = String(data || "Investment request submitted.");
 
     await loadProfile();
-
-    const balanceElement = document.getElementById("investBalance");
-    if (balanceElement && profile) {
-      balanceElement.textContent =
-        "UGX " + Number(profile.balance || 0).toLocaleString("en-UG");
+    if (profile) {
+      document.getElementById("investBalance").textContent =
+        money(profile.balance);
     }
   } catch (err) {
-    info.textContent = "Could not submit investment. Please try again.";
+    info.textContent = "Could not confirm the result. Refresh your history before trying again.";
+  } finally {
+    investmentSubmitting = false;
+    if (button) button.disabled = false;
   }
 }
+
 
 
 function showDepositNumber() {
