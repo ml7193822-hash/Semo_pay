@@ -602,6 +602,7 @@ async function adminDecision(type, id, decision) {
   await loadProfile();
   await loadHistory();
 }
+
 async function adminInvestmentDecision(id, decision) {
   if (!profile || profile.role !== "admin") {
     return message("Admin access required.", true);
@@ -615,34 +616,32 @@ async function adminInvestmentDecision(id, decision) {
     return;
   }
 
-  const functionName = decision === "approved"
-    ? "admin_approve_investment"
-    : "admin_reject_investment";
+  message("Processing investment decision...");
 
-  const { data, error } = await db.rpc(functionName, {
-    p_investment_id: id
-  });
+  try {
+    const functionName = decision === "approved"
+      ? "admin_approve_investment"
+      : "admin_reject_investment";
 
-  if (error) {
-    return message("Investment decision failed: " + error.message, true);
-  }
+    const { data, error } = await db.rpc(functionName, {
+      p_investment_id: id
+    });
 
-  message(data || "Investment " + decision + " successfully.");
+    if (error) {
+      return message("Investment decision failed: " + error.message, true);
+    }
+
+    message(String(data || "Decision processed. Refreshing investments..."));
 
     await loadAdminInvestments();
-  await loadProfile();
-  await loadHistory();
+    await loadProfile();
+    await loadHistory();
+
+  } catch (err) {
+    message("Approval error: " + (err.message || String(err)), true);
+  }
 }
 
-db.auth.onAuthStateChange((event, session) => {
-
-  if (session && !currentUser) {
-    setTimeout(() => startApp(), 0);
-  } else if (event === "SIGNED_OUT") {
-    currentUser = null;
-    profile = null;
-  }
-});
 
 (async function init() {
   const { data: { session } } = await db.auth.getSession();
