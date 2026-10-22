@@ -759,40 +759,108 @@ function renderAdminRows(rows, type) {
   </div>`).join("");
 }
 
+
 async function adminDecision(type, id, decision) {
-  if (!profile || profile.role !== "admin")
+  if (!profile || profile.role !== "admin") {
     return message("Admin access required.", true);
-
-  if (!confirm("Are you sure you want to " + decision + " this request?"))
-    return;
-
-  if (type === "withdrawal" && decision === "approved") {
-    const { data, error } = await db.rpc(
-      "admin_approve_withdrawal", { p_request_id: id }
-    );
-    if (error) return message("Withdrawal approval failed: " + error.message, true);
-    message(data || "Withdrawal approved. Check the database result.");
-  } else if (type === "deposit" && decision === "approved") {
-    if (!confirm("Have you confirmed that the deposit was received?")) return;
-
-    const { error } = await db.rpc(
-      "admin_approve_deposit", { p_request_id: id }
-    );
-    if (error) return message("Deposit approval failed: " + error.message, true);
-    message("Deposit approved.");
-  } else {
-    const table = type === "deposit" ? "deposit_requests" : "withdrawal_requests";
-    const { error } = await db.from(table).update({status:"rejected"})
-      .eq("id", id).eq("status", "pending");
-
-    if (error) return message("Could not reject request: " + error.message, true);
-    message("Request rejected.");
   }
 
-  await loadAdmin();
-  await loadProfile();
-  await loadHistory();
+  if (!confirm("Are you sure you want to " + decision + " this request?")) {
+    return;
+  }
+
+  // INVESTMENT APPROVAL
+  if (type === "investment" && decision === "approved") {
+    const { data, error } = await db.rpc(
+      "admin_approve_investment",
+      { p_investment_id: Number(id) }
+    );
+
+    if (error) {
+      return message("Investment approval failed: " + error.message, true);
+    }
+
+    message(data || "Investment approved successfully.");
+
+    await loadAdminInvestments();
+    await loadProfile();
+    return;
+  }
+
+  // INVESTMENT REJECTION
+  if (type === "investment" && decision === "rejected") {
+    const { data, error } = await db.rpc(
+      "admin_reject_investment",
+      { p_investment_id: Number(id) }
+    );
+
+    if (error) {
+      return message("Investment rejection failed: " + error.message, true);
+    }
+
+    message(data || "Investment rejected and refunded.");
+    await loadAdminInvestments();
+    await loadProfile();
+    return;
+  }
+
+  // WITHDRAWAL APPROVAL
+  if (type === "withdrawal" && decision === "approved") {
+    const { data, error } = await db.rpc(
+      "admin_approve_withdrawal",
+      { p_request_id: id }
+    );
+
+    if (error) {
+      return message("Withdrawal approval failed: " + error.message, true);
+    }
+
+    message(data || "Withdrawal approved.");
+    return;
+  }
+
+  // DEPOSIT APPROVAL
+  if (type === "deposit" && decision === "approved") {
+    if (!confirm("Have you confirmed that the deposit was received?")) {
+      return;
+    }
+
+    const { data, error } = await db.rpc(
+      "admin_approve_deposit",
+      { p_request_id: id }
+    );
+
+    if (error) {
+      return message("Deposit approval failed: " + error.message, true);
+    }
+
+    message(data || "Deposit approved.");
+    return;
+  }
+
+  // REJECT DEPOSIT OR WITHDRAWAL
+  if (type === "deposit" || type === "withdrawal") {
+    const table = type === "deposit"
+      ? "deposit_requests"
+      : "withdrawal_requests";
+
+    const { error } = await db.from(table)
+      .update({ status: "rejected" })
+      .eq("id", id)
+      .eq("status", "pending");
+
+    if (error) {
+      return message("Could not reject request: " + error.message, true);
+    }
+
+    message("Request rejected.");
+    return;
+  }
+
+  message("Unknown request type: " + type, true);
 }
+
+
 
 async function adminInvestmentDecision(id, decision) {
   if (!profile || profile.role !== "admin") {
