@@ -629,10 +629,12 @@ async function adminInvestmentDecision(id, decision) {
 
   message(data || "Investment " + decision + " successfully.");
 
-  await loadAdminInvestments();
+    await loadAdminInvestments();
   await loadProfile();
   await loadHistory();
-  }
+}
+
+db.auth.onAuthStateChange((event, session) => {
 db.auth.onAuthStateChange((event, session) => {
   if (session && !currentUser) {
     setTimeout(() => startApp(), 0);
