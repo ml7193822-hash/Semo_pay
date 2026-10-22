@@ -635,7 +635,7 @@ async function adminInvestmentDecision(id, decision) {
 }
 
 db.auth.onAuthStateChange((event, session) => {
-db.auth.onAuthStateChange((event, session) => {
+
   if (session && !currentUser) {
     setTimeout(() => startApp(), 0);
   } else if (event === "SIGNED_OUT") {
