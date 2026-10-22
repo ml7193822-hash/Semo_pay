@@ -38,6 +38,10 @@ nav button{width:auto;flex:1;min-width:100px}
 <h2 id="authTitle">Login</h2>
 <label>Full name (for new account)</label>
 <input id="fullName" placeholder="Enter your full name">
+  
+<label>Referral code (optional)</label>
+<input id="referralCode" placeholder="Enter inviter's referral code">
+
 <label>Email address</label>
 <input id="email" type="email" placeholder="Enter email">
 <label>Password</label>
@@ -334,22 +338,35 @@ async function copyDepositNumber() {
   }
 }
 
+
 async function signup() {
   const name = document.getElementById("fullName").value.trim();
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
+  const referralCode = document.getElementById("referralCode").value.trim().toUpperCase();
 
-  if (!name || !email || !password)
+  if (!name || !email || !password) {
     return message("Enter your full name, email and password.", true);
+  }
 
   const { error } = await db.auth.signUp({
-    email, password,
-    options: { data: { full_name: name } }
+    email,
+    password,
+    options: {
+      data: {
+        full_name: name,
+        referral_code: referralCode || null
+      }
+    }
   });
 
-  if (error) return message(error.message, true);
+  if (error) {
+    return message(error.message, true);
+  }
+
   message("Account created. If email confirmation is enabled, check your email before logging in.");
 }
+
 
 
 async function login() {
