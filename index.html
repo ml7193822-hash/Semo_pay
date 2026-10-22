@@ -319,18 +319,35 @@ async function signup() {
   message("Account created. If email confirmation is enabled, check your email before logging in.");
 }
 
+
 async function login() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
 
-  if (!email || !password)
-    return message("Enter your email and password.", true);
+  if (!email || !password) {
+    message("Enter your email and password.", true);
+    return;
+  }
 
-  const { error } = await db.auth.signInWithPassword({email,password});
-  if (error) return message(error.message, true);
+  message("Signing in...");
 
-  await startApp();
+  try {
+    const { error } = await db.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+    if (error) {
+      message("Login failed: " + error.message, true);
+      return;
+    }
+
+    await startApp();
+  } catch (err) {
+    message("Login error: " + (err.message || "Please try again."), true);
+  }
 }
+
 
 async function resetPassword() {
   const email = document.getElementById("email").value.trim();
