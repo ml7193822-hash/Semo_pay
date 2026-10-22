@@ -66,6 +66,7 @@ nav button{width:auto;flex:1;min-width:100px}
 <button onclick="showPage('withdrawPage')">Withdraw</button>
 <button onclick="showPage('historyPage')">History</button>
 <button onclick="showPage('investPage')">Invest</button>
+  <button onclick="showPage('referralPage')">Referrals</button>
 <button onclick="window.open('https://chat.whatsapp.com/BZK6rMIgoF8HHormrIzSNz?s=cl&p=a&mlu=4&ilr=4','_blank','noopener')">WhatsApp Group</button>
 <button onclick="window.open('https://wa.me/256783865497','_blank','noopener')">Customer Support</button>
 <button id="adminTab" class="hidden" onclick="showPage('adminPage')">Admin</button>
@@ -172,6 +173,33 @@ nav button{width:auto;flex:1;min-width:100px}
   </p>
 </section>
 
+<section id="referralPage" class="card hidden">
+  <h2>My Referrals</h2>
+
+  <p>Share your referral code with friends.</p>
+
+  <label>Your Referral Code</label>
+  <input id="myReferralCode" readonly
+         placeholder="Loading referral code...">
+
+  <button onclick="copyReferralCode()">
+    Copy Referral Code
+  </button>
+
+  <h3>People I Invited</h3>
+  <p id="referralCount">Loading...</p>
+
+  <h3>My Referral Commissions</h3>
+  <p>Level 1 (30%): <strong id="level1Total">UGX 0</strong></p>
+  <p>Level 2 (5%): <strong id="level2Total">UGX 0</strong></p>
+  <p>Level 3 (1%): <strong id="level3Total">UGX 0</strong></p>
+  <p>Total Commissions: <strong id="totalReferralCommissions">UGX 0</strong></p>
+
+  <button onclick="loadReferrals()">Refresh Referrals</button>
+
+  <div id="referralMessage"></div>
+</section>
+
 <section id="adminPage" class="card hidden">
 <h2>Admin Dashboard</h2>
 <p class="small">Approve deposits only after verifying that the money was received.</p>
@@ -208,7 +236,7 @@ function money(n) {
 function showPage(id) {
   const pages = [
     "dashboardPage","depositPage","withdrawPage",
-    "historyPage","investPage","adminPage"
+    "historyPage","investPage","referralPage","adminPage"
   ];
 
   const selected = document.getElementById(id);
@@ -236,10 +264,104 @@ function showPage(id) {
   }
   if (id === "historyPage") loadHistory();
   if (id === "adminPage") loadAdmin();
+  if (id === "referralPage") loadReferrals();
 }
 
 
 
+
+async function loadReferrals() {
+  const msg = document.getElementById("referralMessage");
+
+  if (!currentUser) {
+    msg.textContent = "Please log in first.";
+    return;
+  }
+
+  msg.textContent = "Loading referrals...";
+
+  const { data: profileData, error: profileError } = await db
+    .from("profiles")
+    .select("referral_code")
+    .eq("id", currentUser.id)
+    .single();
+
+  if (profileError) {
+    msg.textContent = "Could not load referral code: " + profileError.message;
+    return;
+  }
+
+  document.getElementById("myReferralCode").value =
+    profileData.referral_code || "";
+
+  const { count, error: referralError } = await db
+    .from("referrals")
+    .select("id", { count: "exact", head: true })
+    .eq("referrer_id", currentUser.id);
+
+  if (referralError) {
+    msg.textContent = "Could not load invited members: " + referralError.message;
+    return;
+  }
+
+  document.getElementById("referralCount").textContent =
+    (count || 0) + " people invited";
+
+  const { data: commissions, error: commissionError } = await db
+    .from("referral_commissions")
+    .select("level, amount, status")
+    .eq("user_id", currentUser.id)
+    .eq("status", "approved");
+
+  if (commissionError) {
+    msg.textContent = "Could not load commissions: " + commissionError.message;
+    return;
+  }
+
+  let level1 = 0;
+  let level2 = 0;
+  let level3 = 0;
+
+  (commissions || []).forEach(function(item) {
+    const amount = Number(item.amount || 0);
+
+    if (Number(item.level) === 1) level1 += amount;
+    if (Number(item.level) === 2) level2 += amount;
+    if (Number(item.level) === 3) level3 += amount;
+  });
+
+  document.getElementById("level1Total").textContent = money(level1);
+  document.getElementById("level2Total").textContent = money(level2);
+  document.getElementById("level3Total").textContent = money(level3);
+  document.getElementById("totalReferralCommissions").textContent =
+    money(level1 + level2 + level3);
+
+  msg.textContent = "Referral information updated.";
+}
+
+async function copyReferralCode() {
+  const input = document.getElementById("myReferralCode");
+  const msg = document.getElementById("referralMessage");
+  const code = input.value.trim();
+
+  if (!code) {
+    msg.textContent = "Your referral code has not loaded yet.";
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(code);
+    msg.textContent = "Referral code copied!";
+  } catch (error) {
+    input.focus();
+    input.select();
+
+    const copied = document.execCommand("copy");
+    msg.textContent = copied
+      ? "Referral code copied!"
+      : "Please select and copy your referral code manually.";
+  }
+}
 
 let investmentSubmitting = false;
 
