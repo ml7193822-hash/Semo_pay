@@ -167,6 +167,9 @@ nav button{width:auto;flex:1;min-width:100px}
 <div id="adminDeposits"></div>
 <h3>Withdrawal Requests</h3>
 <div id="adminWithdrawals"></div>
+  <h3>Investment Requests</h3>
+<button onclick="loadAdminInvestments()">Refresh investments</button>
+<div id="adminInvestments"></div>
 </section>
 </section>
 </main>
@@ -492,7 +495,40 @@ async function loadAdmin() {
     ? '<p class="bad">Could not load withdrawals: '+safeText(w.error.message)+'</p>'
     : renderAdminRows(w.data || [], "withdrawal");
 }
+async function loadAdminInvestments() {
+  const box = document.getElementById("adminInvestments");
 
+  if (!currentUser || !profile || profile.role !== "admin") {
+    box.textContent = "Admin access required.";
+    return;
+  }
+
+  box.textContent = "Loading investments...";
+
+  const { data, error } = await db
+    .from("investments")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    box.textContent = "Could not load investments: " + error.message;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    box.textContent = "No investment requests found.";
+    return;
+  }
+
+  box.innerHTML = data.map(function (r) {
+    return `<div class="item">
+      <strong>Investment: ${money(r.amount)}</strong><br>
+      User ID: ${safeText(r.user_id)}<br>
+      Status: ${safeText(r.status || "pending")}<br>
+      Date: ${safeText(r.created_at || "—")}
+    </div>`;
+  }).join("");
+  }
 function renderAdminRows(rows, type) {
   if (!rows.length) return "<p>No requests found.</p>";
 
