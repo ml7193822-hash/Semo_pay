@@ -521,14 +521,17 @@ async function loadAdminInvestments() {
   }
 
   box.innerHTML = data.map(function (r) {
-    return `<div class="item">
-      <strong>Investment: ${money(r.amount)}</strong><br>
-      User ID: ${safeText(r.user_id)}<br>
-      Status: ${safeText(r.status || "pending")}<br>
-      Date: ${safeText(r.created_at || "—")}
-    </div>`;
-  }).join("");
-  }
+  return `<div class="item">
+    <strong>Investment: ${money(r.amount)}</strong><br>
+    User ID: ${safeText(r.user_id)}<br>
+    Status: <strong>${safeText(r.status || "pending")}</strong><br>
+    Date: ${safeText(r.created_at || "—")}<br>
+    ${r.status === "pending" ? `
+      <button onclick="adminInvestmentDecision('${r.id}', 'approved')">Approve Investment</button>
+      <button class="danger" onclick="adminInvestmentDecision('${r.id}', 'rejected')">Reject Investment</button>
+    ` : ""}
+  </div>`;
+}).join("");
 function renderAdminRows(rows, type) {
   if (!rows.length) return "<p>No requests found.</p>";
 
@@ -581,7 +584,37 @@ async function adminDecision(type, id, decision) {
   await loadProfile();
   await loadHistory();
 }
+async function adminInvestmentDecision(id, decision) {
+  if (!profile || profile.role !== "admin") {
+    return message("Admin access required.", true);
+  }
 
+  if (decision !== "approved" && decision !== "rejected") {
+    return message("Invalid decision.", true);
+  }
+
+  if (!confirm("Are you sure you want to " + decision + " this investment?")) {
+    return;
+  }
+
+  const functionName = decision === "approved"
+    ? "admin_approve_investment"
+    : "admin_reject_investment";
+
+  const { data, error } = await db.rpc(functionName, {
+    p_investment_id: id
+  });
+
+  if (error) {
+    return message("Investment decision failed: " + error.message, true);
+  }
+
+  message(data || "Investment " + decision + " successfully.");
+
+  await loadAdminInvestments();
+  await loadProfile();
+  await loadHistory();
+  }
 db.auth.onAuthStateChange((event, session) => {
   if (session && !currentUser) {
     setTimeout(() => startApp(), 0);
