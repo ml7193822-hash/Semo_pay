@@ -226,56 +226,24 @@ font-size:14px;
 <button id="adminTab" class="hidden" onclick="showPage('adminPage')">Admin</button>
 </nav>
 
-.dashboard-balance{
-background:linear-gradient(135deg,#14532d,#15803d);
-color:white;
-padding:20px;
-margin:18px 0;
-border-radius:16px;
-}
-.dashboard-balance .balance-label,
-.dashboard-balance .bonus-label{
-color:#e2f5e8;
-margin-bottom:4px;
-}
-.dashboard-balance h2{
-color:white;
-font-size:28px;
-margin:5px 0 18px;
-overflow-wrap:anywhere;
-}
-.dashboard-balance h3{
-color:white;
-margin:4px 0;
-}
-.dashboard-actions{
-display:grid;
-grid-template-columns:repeat(2,minmax(0,1fr));
-gap:10px;
-margin:18px 0;
-}
-.dashboard-actions button{
-min-height:58px;
-margin:0;
-border-radius:12px;
-}
-.dashboard-note{
-background:#f0fdf4;
-border:1px solid #dcfce7;
-padding:14px;
-border-radius:12px;
-margin-top:16px;
-}
-.dashboard-note p{
-margin-bottom:0;
-font-size:14px;
-}
-@media(max-width:360px){
-.dashboard-actions{
-grid-template-columns:1fr;
-}
-}
-
+<section id="dashboardPage" class="card">
+  <h2>Welcome to SEMO PAY 👋</h2>
+  <p>Manage your money and access your account services below.</p>  <div class="dashboard-balance">
+    <p class="balance-label">Available Balance</p>
+    <h2 id="dashboardBalance">UGX 0</h2>
+    <p class="bonus-label">Welcome Bonus</p>
+    <h3 id="dashboardBonus">UGX 0</h3>
+  </div>  <div class="dashboard-actions">
+    <button onclick="showPage('depositPage')">💰 Deposit</button>
+    <button onclick="showPage('withdrawPage')">🏦 Withdraw</button>
+    <button onclick="showPage('investPage')">📈 Invest</button>
+    <button onclick="showPage('historyPage')">📋 History</button>
+    <button onclick="showPage('referralsPage')">👥 Referrals</button>
+  </div>  <div class="dashboard-note">
+    <strong>Welcome to SEMO PAY</strong>
+    <p>Manage your account responsibly. Deposits and withdrawals are subject to administrator review.</p>
+  </div>
+</section>
 <section id="depositPage" class="card hidden">
 <h2>Deposit</h2>
 <p>Minimum deposit: <strong>UGX 10,000</strong></p>
