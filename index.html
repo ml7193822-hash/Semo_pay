@@ -120,13 +120,19 @@ nav button{width:auto;flex:1;min-width:100px}
 <p class="small">A withdrawal request is not an automatic payment. An administrator must review it and arrange payment separately.</p>
 </section>
 
+
 <section id="historyPage" class="card hidden">
 <h2>Deposit History</h2>
 <button onclick="loadHistory()">Refresh history</button>
 <div id="depositHistory"></div>
+
 <h2>Withdrawal History</h2>
 <div id="withdrawHistory"></div>
+
+<h2>Investment History</h2>
+<div id="investmentHistory"></div>
 </section>
+
 
 
 <section id="investPage" class="card hidden">
@@ -493,22 +499,42 @@ function safeText(value) {
   }[c]));
 }
 
+
 async function loadHistory() {
   if (!currentUser) return;
 
   const d = await db.from("deposit_requests").select("*")
-    .eq("user_id", currentUser.id).order("created_at",{ascending:false});
+    .eq("user_id", currentUser.id)
+    .order("created_at", { ascending: false });
+
   const w = await db.from("withdrawal_requests").select("*")
-    .eq("user_id", currentUser.id).order("created_at",{ascending:false});
+    .eq("user_id", currentUser.id)
+    .order("created_at", { ascending: false });
+
+  const i = await db.from("investments").select("*")
+    .eq("user_id", currentUser.id)
+    .order("created_at", { ascending: false });
 
   document.getElementById("depositHistory").innerHTML = d.error
-    ? '<p class="bad">Could not load deposits: '+safeText(d.error.message)+'</p>'
+    ? '<p class="bad">Could not load deposits: ' +
+      safeText(d.error.message) + '</p>'
     : renderItems(d.data || []);
 
   document.getElementById("withdrawHistory").innerHTML = w.error
-    ? '<p class="bad">Could not load withdrawals: '+safeText(w.error.message)+'</p>'
+    ? '<p class="bad">Could not load withdrawals: ' +
+      safeText(w.error.message) + '</p>'
     : renderItems(w.data || []);
+
+  const investmentHistory = document.getElementById("investmentHistory");
+
+  if (investmentHistory) {
+    investmentHistory.innerHTML = i.error
+      ? '<p class="bad">Could not load investments: ' +
+        safeText(i.error.message) + '</p>'
+      : renderItems(i.data || []);
+  }
 }
+
 
 function renderItems(rows) {
   if (!rows.length) return "<p>No requests yet.</p>";
