@@ -118,22 +118,72 @@
 </nav>
 
 <section id="dashboardPage" class="card">
-  <h2>Welcome to SEMO PAY 👋</h2>
-  <p>Manage your money and access your account services below.</p>  <div class="dashboard-balance">
+
+  <div class="dashboard-welcome">
+    <p class="dashboard-brand">🌿 SEMO PAY</p>
+    <h2>Welcome back 👋</h2>
+    <p>Manage your money in one place.</p>
+  </div>
+
+  <div class="dashboard-balance">
     <p class="balance-label">Available Balance</p>
     <h2 id="dashboardBalance">UGX 0</h2>
-    <p class="bonus-label">Welcome Bonus</p>
-    <h3 id="dashboardBonus">UGX 0</h3>
-  </div>  <div class="dashboard-actions">
-    <button onclick="showPage('depositPage')">💰 Deposit</button>
-    <button onclick="showPage('withdrawPage')">🏦 Withdraw</button>
-    <button onclick="showPage('investPage')">📈 Invest</button>
-    <button onclick="showPage('historyPage')">📋 History</button>
-<button onclick="showPage('referralPage')">👥 Referrals</button>
-  </div>  <div class="dashboard-note">
-    <strong>Welcome to SEMO PAY</strong>
-    <p>Manage your account responsibly. Deposits and withdrawals are subject to administrator review.</p>
+
+    <div class="dashboard-bonus-box">
+      <div>
+        <p class="bonus-label">🎁 Welcome Bonus</p>
+        <h3 id="dashboardBonus">UGX 0</h3>
+      </div>
+      <span class="bonus-icon">🎉</span>
+    </div>
   </div>
+
+  <h3 class="dashboard-section-title">Quick Services</h3>
+
+  <div class="dashboard-actions">
+
+    <button class="dashboard-action deposit-action"
+      onclick="showPage('depositPage')">
+      <span class="service-icon">💰</span>
+      <strong>Deposit</strong>
+      <small>Add money</small>
+    </button>
+
+    <button class="dashboard-action withdraw-action"
+      onclick="showPage('withdrawPage')">
+      <span class="service-icon">🏦</span>
+      <strong>Withdraw</strong>
+      <small>Request payout</small>
+    </button>
+
+    <button class="dashboard-action invest-action"
+      onclick="showPage('investPage')">
+      <span class="service-icon">📈</span>
+      <strong>Invest</strong>
+      <small>View investment plans</small>
+    </button>
+
+    <button class="dashboard-action history-action"
+      onclick="showPage('historyPage')">
+      <span class="service-icon">📋</span>
+      <strong>History</strong>
+      <small>View transactions</small>
+    </button>
+
+    <button class="dashboard-action referral-action"
+      onclick="showPage('referralPage')">
+      <span class="service-icon">👥</span>
+      <strong>Referrals</strong>
+      <small>Your referral network</small>
+    </button>
+
+  </div>
+
+  <div class="dashboard-note">
+    <strong>🛡️ Your account matters</strong>
+    <p>Deposits and withdrawals are subject to administrator review. Always verify transaction details.</p>
+  </div>
+
 </section>
 <section id="depositPage" class="card hidden">
 <h2>Deposit</h2>
