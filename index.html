@@ -1179,8 +1179,8 @@ async function adminInvestmentDecision(id, decision) {
       : "admin_reject_investment";
 
     const { data, error } = await db.rpc(functionName, {
-      p_investment_id: id
-    });
+  p_investment_id: Number(id)
+});
 
     if (error) {
       return message("Investment decision failed: " + error.message, true);
