@@ -7,68 +7,165 @@
 <title>SEMO PAY</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
+/* SEMO PAY MODERN FINANCE DASHBOARD */
 
-.dashboard-balance{
-  background:linear-gradient(135deg,#14532d,#15803d);
-  color:#fff;
-  padding:24px;
-  margin:20px 0;
-  border-radius:20px;
-  box-shadow:0 5px 14px #14532d20;
+.dashboard-welcome {
+padding: 8px 4px 18px;
 }
 
-.dashboard-balance .balance-label,
-.dashboard-balance .bonus-label{
-  color:#e2f5e8;
-  margin:5px 0;
+.dashboard-brand {
+color: #15803d;
+font-weight: 800;
+font-size: 18px;
+letter-spacing: 1px;
+margin-bottom: 18px;
 }
 
-.dashboard-balance h2{
-  color:#fff;
-  font-size:30px;
-  margin:8px 0 20px;
-  overflow-wrap:anywhere;
+.dashboard-welcome h2 {
+color: #14532d;
+font-size: 25px;
+margin: 8px 0;
 }
 
-.dashboard-balance h3{
-  color:#fff;
-  margin:6px 0;
-  font-size:22px;
+.dashboard-welcome p:last-child {
+color: #64748b;
+font-size: 14px;
 }
 
-.dashboard-actions{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
-  margin:20px 0;
+.dashboard-balance {
+background: linear-gradient(135deg, #14532d, #15803d, #16a34a);
+color: white;
+padding: 25px 22px;
+border-radius: 22px;
+margin: 10px 0 28px;
+box-shadow: 0 8px 22px rgba(20, 83, 45, 0.20);
 }
 
-.dashboard-actions button{
-  min-height:64px;
-  margin:0;
-  border-radius:14px;
-  font-size:16px;
+.balance-label {
+color: #dcfce7;
+font-size: 14px;
+margin: 0 0 8px;
 }
 
-.dashboard-note{
-  background:#f0fdf4;
-  border:1px solid #dcfce7;
-  padding:16px;
-  border-radius:14px;
-  margin-top:18px;
+.dashboard-balance h2 {
+color: white;
+font-size: 30px;
+margin: 8px 0 22px;
+overflow-wrap: anywhere;
 }
 
-.dashboard-note p{
-  margin-bottom:0;
-  font-size:14px;
+.dashboard-bonus-box {
+display: flex;
+justify-content: space-between;
+align-items: center;
+background: rgba(255, 255, 255, 0.13);
+padding: 13px 15px;
+border-radius: 14px;
 }
 
-@media(max-width:360px){
-  .dashboard-actions{
-    grid-template-columns:1fr;
-  }
+.bonus-label {
+color: #dcfce7;
+font-size: 13px;
+margin: 0 0 6px;
 }
 
+.dashboard-bonus-box h3 {
+color: white;
+margin: 0;
+font-size: 19px;
+}
+
+.bonus-icon {
+font-size: 30px;
+}
+
+.dashboard-section-title {
+color: #14532d;
+font-size: 19px;
+margin: 0 0 15px;
+}
+
+.dashboard-actions {
+display: grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 14px;
+margin-bottom: 25px;
+}
+
+.dashboard-actions .dashboard-action {
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+justify-content: center;
+gap: 9px;
+min-height: 135px;
+padding: 18px 15px;
+background: #ffffff;
+color: #14532d;
+border: 1px solid #dcfce7;
+border-radius: 18px;
+box-shadow: 0 4px 12px rgba(20, 83, 45, 0.07);
+text-align: left;
+cursor: pointer;
+transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dashboard-actions .dashboard-action:active {
+transform: scale(0.97);
+}
+
+.service-icon {
+display: flex;
+align-items: center;
+justify-content: center;
+width: 43px;
+height: 43px;
+background: #dcfce7;
+border-radius: 13px;
+font-size: 23px;
+}
+
+.dashboard-actions .dashboard-action strong {
+color: #14532d;
+font-size: 16px;
+}
+
+.dashboard-actions .dashboard-action small {
+color: #64748b;
+font-size: 12px;
+line-height: 1.4;
+}
+
+.dashboard-note {
+padding: 17px;
+background: #f0fdf4;
+border: 1px solid #bbf7d0;
+border-radius: 16px;
+color: #166534;
+margin-top: 8px;
+}
+
+.dashboard-note p {
+color: #4b5563;
+font-size: 13px;
+line-height: 1.6;
+margin-bottom: 0;
+}
+
+@media (max-width: 360px) {
+.dashboard-actions {
+gap: 10px;
+}
+
+.dashboard-actions .dashboard-action {
+padding: 14px 11px;
+min-height: 125px;
+}
+
+.dashboard-balance h2 {
+font-size: 25px;
+}
+}
 </style>
 </head>
 <body>
