@@ -6,6 +6,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SEMO PAY</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+.hidden {
+  display: none !important;
+}
+
+.good {
+  color: #166534;
+}
+
+.bad {
+  color: #b91c1c;
+}
+
+.item {
+  background: #f0fdf4;
+  border: 1px solid #dcfce7;
+  border-radius: 12px;
+  padding: 14px;
+  margin: 12px 0;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
   <style>
   /* SEMO PAY GLOBAL MOBILE STYLING */
 
@@ -64,14 +90,16 @@ opacity: 0.85;
 }
 
 @media (max-width: 480px) {
-body {
-padding: 10px;
+  body {
+    padding: 10px;
+  }
+
+  .card {
+    padding: 15px;
+  }
 }
 
-.card {
-padding: 15px;
-}
-}
+/* SEMO PAY MODERN FINANCE DASHBOARD */
 <style>
 /* SEMO PAY MODERN FINANCE DASHBOARD */
 
