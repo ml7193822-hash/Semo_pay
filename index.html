@@ -260,13 +260,6 @@ font-size: 25px;
 </section>
 
 <section id="appSection" class="hidden">
-<div class="card">
-<h2 id="welcome">Dashboard</h2>
-<p>Balance: <strong id="balance">UGX 0</strong></p>
-<p>Welcome bonus: <strong id="bonus">UGX 0</strong></p>
-<p id="userEmail" class="small"></p>
-<button class="secondary" onclick="logout()">Log out</button>
-</div>
 
 <nav>
 <button onclick="showPage('dashboardPage')">Dashboard</button>
@@ -841,11 +834,16 @@ async function loadProfile() {
     return;
   }
 
-  document.getElementById("welcome").textContent =
-    "Welcome, " + (profile.full_name || "Member");
-  document.getElementById("balance").textContent = money(profile.balance);
-  document.getElementById("bonus").textContent = money(profile.welcome_bonus);
-  document.getElementById("investBalance").textContent = money(profile.balance);
+  
+document.getElementById("dashboardBalance").textContent =
+  money(profile.balance);
+
+document.getElementById("dashboardBonus").textContent =
+  money(profile.welcome_bonus);
+
+document.getElementById("investBalance").textContent =
+  money(profile.balance);
+
   document.getElementById("adminTab").classList.toggle(
     "hidden", profile.role !== "admin"
   );
