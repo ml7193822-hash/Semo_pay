@@ -839,7 +839,7 @@ async function startApp() {
   currentUser = user;
   document.getElementById("authSection").classList.add("hidden");
   document.getElementById("appSection").classList.remove("hidden");
-  document.getElementById("userEmail").textContent = user.email || "";
+  
 
   await loadProfile();
   if (profile) showPage("dashboardPage");
