@@ -575,6 +575,9 @@ font-size: 25px;
 <div id="adminWithdrawals"></div>
   <h3>Investment Requests</h3>
 <button onclick="loadAdminInvestments()">Refresh investments</button>
+  <button onclick="creditInvestmentProfits()">
+  Credit Due Profits
+  </button>
 <div id="adminInvestments"></div>
 </section>
 </section>
@@ -1130,49 +1133,32 @@ function renderAdminRows(rows, type) {
 }
 
 
-async function adminDecision(type, id, decision) {
-  if (!profile || profile.role !== "admin") {
-    return message("Admin access required.", true);
-  }
-
-  if (!confirm("Are you sure you want to " + decision + " this request?")) {
+async function creditInvestmentProfits() {
+  if (!currentUser || !profile || profile.role !== "admin") {
+    alert("Admin access required. Please log in as admin.");
     return;
   }
 
-  // INVESTMENT APPROVAL
-  if (type === "investment" && decision === "approved") {
-    const { data, error } = await db.rpc(
-      "admin_approve_investment",
-      { p_investment_id: Number(id) }
-    );
+  const confirmed = confirm(
+    "Credit profits that are due for approved investments?"
+  );
 
-    if (error) {
-      return message("Investment approval failed: " + error.message, true);
-    }
+  if (!confirmed) return;
 
-    message(data || "Investment approved successfully.");
+  const { data, error } = await supabase.rpc(
+    "credit_due_investment_profits"
+  );
 
-    await loadAdminInvestments();
-    await loadProfile();
+  if (error) {
+    alert("Profit credit failed: " + error.message);
     return;
   }
 
-  // INVESTMENT REJECTION
-  if (type === "investment" && decision === "rejected") {
-    const { data, error } = await db.rpc(
-      "admin_reject_investment",
-      { p_investment_id: Number(id) }
-    );
+  alert("Profit crediting completed. Investments credited: " + data);
 
-    if (error) {
-      return message("Investment rejection failed: " + error.message, true);
-    }
-
-    message(data || "Investment rejected and refunded.");
-    await loadAdminInvestments();
-    await loadProfile();
-    return;
-  }
+  await loadProfile();
+  await loadAdminInvestments();
+}
 
   // WITHDRAWAL APPROVAL
   if (type === "withdrawal" && decision === "approved") {
