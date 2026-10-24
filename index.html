@@ -1160,8 +1160,13 @@ async function creditInvestmentProfits() {
   await loadAdminInvestments();
 }
 
-  // WITHDRAWAL APPROVAL
-  if (type === "withdrawal" && decision === "approved") {
+
+async function adminDecision(type, id, decision) {
+  if (!currentUser || !profile || profile.role !== "admin") {
+    return message("Admin access required.", true);
+  }
+
+  if (decision === "approved" && type === "withdrawal") {
     const { data, error } = await db.rpc(
       "admin_approve_withdrawal",
       { p_request_id: id }
@@ -1172,11 +1177,12 @@ async function creditInvestmentProfits() {
     }
 
     message(data || "Withdrawal approved.");
+    await loadAdmin();
+    await loadProfile();
     return;
   }
 
-  // DEPOSIT APPROVAL
-  if (type === "deposit" && decision === "approved") {
+  if (decision === "approved" && type === "deposit") {
     if (!confirm("Have you confirmed that the deposit was received?")) {
       return;
     }
@@ -1191,11 +1197,13 @@ async function creditInvestmentProfits() {
     }
 
     message(data || "Deposit approved.");
+    await loadAdmin();
+    await loadProfile();
     return;
   }
 
-  // REJECT DEPOSIT OR WITHDRAWAL
-  if (type === "deposit" || type === "withdrawal") {
+  if (decision === "rejected" &&
+      (type === "deposit" || type === "withdrawal")) {
     const table = type === "deposit"
       ? "deposit_requests"
       : "withdrawal_requests";
@@ -1210,12 +1218,12 @@ async function creditInvestmentProfits() {
     }
 
     message("Request rejected.");
+    await loadAdmin();
     return;
   }
 
-  message("Unknown request type: " + type, true);
+  message("Unknown request type or decision.", true);
 }
-
 
 
 async function adminInvestmentDecision(id, decision) {
