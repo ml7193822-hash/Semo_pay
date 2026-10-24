@@ -1145,7 +1145,7 @@ async function creditInvestmentProfits() {
 
   if (!confirmed) return;
 
-  const { data, error } = await supabase.rpc(
+  const { data, error } = await db.rpc(
     "credit_due_investment_profits"
   );
 
